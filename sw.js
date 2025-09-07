@@ -62,20 +62,31 @@ self.addEventListener('fetch', (event) => {
     );
 });
 
+// Store last known manifest for comparison
+let lastManifestHash = null;
+
 // Periodic manifest check
 setInterval(() => {
     fetch(MANIFEST_URL + '?cb=' + Date.now(), { cache: 'no-store' })
         .then(response => response.json())
         .then(data => {
-            // Notify all clients about periodic check
-            self.clients.matchAll().then(clients => {
-                clients.forEach(client => {
-                    client.postMessage({
-                        type: 'PERIODIC_CHECK',
-                        manifest: data
+            // Create a simple hash of the manifest content
+            const currentHash = JSON.stringify(data);
+            
+            // Only notify if manifest actually changed
+            if (lastManifestHash && lastManifestHash !== currentHash) {
+                console.log('Manifest changed, notifying clients...');
+                self.clients.matchAll().then(clients => {
+                    clients.forEach(client => {
+                        client.postMessage({
+                            type: 'MANIFEST_CHANGED',
+                            manifest: data
+                        });
                     });
                 });
-            });
+            }
+            
+            lastManifestHash = currentHash;
         })
         .catch(err => console.log('Periodic check failed:', err));
-}, 30000); // Check every 30 seconds
+}, 60000); // Check every 60 seconds instead of 30
