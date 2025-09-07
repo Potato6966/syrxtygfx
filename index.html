@@ -733,12 +733,29 @@
                     
                     // Listen for manifest updates
                     navigator.serviceWorker.addEventListener('message', event => {
-                        if (event.data.type === 'MANIFEST_UPDATED' || event.data.type === 'PERIODIC_CHECK') {
-                            console.log('Manifest updated, refreshing page...');
-                            // Force refresh after a short delay to allow current operations to complete
+                        if (event.data.type === 'MANIFEST_UPDATED' || event.data.type === 'MANIFEST_CHANGED') {
+                            console.log('New images detected, refreshing page...');
+                            // Show a subtle notification before refresh
+                            const notification = document.createElement('div');
+                            notification.style.cssText = `
+                                position: fixed;
+                                top: 20px;
+                                right: 20px;
+                                background: linear-gradient(135deg, #3b82f6, #93c5fd);
+                                color: white;
+                                padding: 15px 25px;
+                                border-radius: 10px;
+                                font-weight: 600;
+                                z-index: 20000;
+                                box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+                            `;
+                            notification.textContent = '🔄 New images detected! Refreshing...';
+                            document.body.appendChild(notification);
+                            
+                            // Force refresh after a short delay
                             setTimeout(() => {
                                 window.location.reload(true);
-                            }, 1000);
+                            }, 2000);
                         }
                     });
                 })
