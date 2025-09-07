@@ -844,6 +844,28 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('✅ All images preloaded');
         
         console.log('⚡⚡⚡ ULTRA-LIGHTNING portfolio ready! All images available instantly!');
+
+        // Periodically poll manifest for changes and update counts
+        async function refreshCountsFromManifest() {
+            try {
+                // Force re-fetch of manifest
+                window.__imagesManifest = undefined;
+                const categories = Object.keys(portfolioCategories);
+                await Promise.all(categories.map(async (category) => {
+                    const info = portfolioCategories[category];
+                    const files = await listImagesInFolder(info.folder, info.extensions);
+                    const full = files.map(f => `${info.folder}${f}`);
+                    const valid = await verifyImagesExist(full);
+                    updatePortfolioCount(category, valid.length);
+                    // If modal for this category is open and we have no data loaded yet, keep it fresh next time user opens
+                    portfolioData[category] = portfolioData[category] || valid.map(p => ({ path: p, name: p.split('/').pop().replace(/\.(png|jpg|jpeg|gif|webp)$/i, ''), category }));
+                }));
+            } catch (e) {
+                console.warn('Refresh counts failed:', e);
+            }
+        }
+
+        setInterval(refreshCountsFromManifest, 60000);
     });
 
 
