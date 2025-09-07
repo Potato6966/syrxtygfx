@@ -193,6 +193,16 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    async function verifyImagesExist(paths) {
+        const checks = paths.map(src => {
+            return preloadImage(src).then(() => ({ src, ok: true })).catch(() => ({ src, ok: false }));
+        });
+        const results = await Promise.allSettled(checks);
+        return results
+            .filter(r => r.status === 'fulfilled' && r.value.ok)
+            .map(r => r.value.src);
+    }
+
     function preloadEssentialImages() {
         return preloadBackgroundImages().then(() => {
             const essentialImages = ['SYRXTY_pfp/IMG_5510.png'];
@@ -265,10 +275,9 @@ document.addEventListener('DOMContentLoaded', function() {
         for (const category of Object.keys(portfolioCategories)) {
             const categoryInfo = portfolioCategories[category];
             const categoryFiles = await getCategoryFilenames(category);
-            categoryFiles.forEach(filename => {
-                const imagePath = `${categoryInfo.folder}${filename}`;
-                allImagePaths.push(imagePath);
-            });
+            const fullPaths = categoryFiles.map(filename => `${categoryInfo.folder}${filename}`);
+            const valid = await verifyImagesExist(fullPaths);
+            valid.forEach(p => allImagePaths.push(p));
         }
 
         totalCount = allImagePaths.length;
@@ -654,7 +663,11 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             if (!portfolioData[category] || portfolioData[category].length === 0) {
                 console.log(`Loading gallery images for ${category}...`);
-                const images = await scanDirectoryForImages(category);
+                let images = await scanDirectoryForImages(category);
+                // Verify paths actually resolve to images before showing
+                const validPaths = await verifyImagesExist(images.map(i => i.path));
+                const validSet = new Set(validPaths);
+                images = images.filter(i => validSet.has(i.path));
                 portfolioData[category] = images;
             }
 
