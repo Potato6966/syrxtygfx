@@ -20,7 +20,42 @@ document.addEventListener('DOMContentLoaded', function() {
 
     let selectedBackgroundImage = null;
 
+    async function getImagesManifest() {
+        if (window.__imagesManifest !== undefined) return window.__imagesManifest;
+        try {
+            const res = await fetch(`images-manifest.json?cb=${Date.now()}`, { cache: 'no-store' });
+            if (!res.ok) throw new Error('no manifest');
+            const json = await res.json();
+            window.__imagesManifest = json;
+            return json;
+        } catch (e) {
+            window.__imagesManifest = null;
+            return null;
+        }
+    }
+
+    function mapFolderToKey(folder) {
+        const mapping = {
+            'Thumbnails/': 'thumbnails',
+            'Logos/': 'logos',
+            'Product banners/': 'product-banners',
+            'Product boxes/': 'product-boxes',
+            'backround/': 'backround'
+        };
+        return mapping[folder] || null;
+    }
+
     async function listImagesInFolder(folder, extensions) {
+        // 1) Try manifest (works on GitHub Pages)
+        const manifest = await getImagesManifest();
+        const key = mapFolderToKey(folder);
+        if (manifest && key && Array.isArray(manifest[key])) {
+            return manifest[key].filter(name => {
+                const lower = name.toLowerCase();
+                return extensions.some(ext => lower.endsWith('.' + ext));
+            });
+        }
+        // 2) Fallback to directory listing (may be disabled on GH Pages)
         try {
             const res = await fetch(encodeURI(folder));
             if (!res.ok) throw new Error('Directory listing not available');
@@ -549,22 +584,34 @@ document.addEventListener('DOMContentLoaded', function() {
         if (images.length > 0) {
             console.log(`🎯 Images already loaded for ${category}, showing instantly!`);
             galleryContainer.innerHTML = '';
+            const fragment = document.createDocumentFragment();
             images.forEach((image, index) => {
                 const galleryItem = document.createElement('div');
                 galleryItem.className = 'gallery-item';
+                galleryItem.style.opacity = '0';
                 galleryItem.innerHTML = `
-                    <img src="${image.path}" alt="${image.name}" loading="eager">
+                    <img alt="${image.name}" decoding="async" fetchpriority="low" style="opacity:0">
                     <div class="gallery-item-overlay">
                         <h4>${image.name}</h4>
                     </div>
                 `;
 
+                const imgEl = galleryItem.querySelector('img');
+                preloadImage(image.path).then(() => {
+                    imgEl.src = image.path;
+                    imgEl.style.opacity = '1';
+                    galleryItem.style.opacity = '1';
+                }).catch(() => {
+                    galleryItem.remove();
+                });
+
                 galleryItem.addEventListener('click', () => {
                     openLightbox(images, index);
                 });
 
-                galleryContainer.appendChild(galleryItem);
+                fragment.appendChild(galleryItem);
             });
+            galleryContainer.appendChild(fragment);
             return;
         }
 
@@ -641,22 +688,34 @@ document.addEventListener('DOMContentLoaded', function() {
                 galleryContainer.innerHTML = '<p style="text-align: center; color: #94a3b8; grid-column: 1 / -1;">No images found in this category yet.</p>';
             } else {
                 galleryContainer.innerHTML = '';
+                const fragment = document.createDocumentFragment();
                 images.forEach((image, index) => {
                     const galleryItem = document.createElement('div');
                     galleryItem.className = 'gallery-item';
+                    galleryItem.style.opacity = '0';
                     galleryItem.innerHTML = `
-                        <img src="${image.path}" alt="${image.name}" loading="eager">
+                        <img alt="${image.name}" decoding="async" fetchpriority="low" style="opacity:0">
                         <div class="gallery-item-overlay">
                             <h4>${image.name}</h4>
                         </div>
                     `;
 
+                    const imgEl = galleryItem.querySelector('img');
+                    preloadImage(image.path).then(() => {
+                        imgEl.src = image.path;
+                        imgEl.style.opacity = '1';
+                        galleryItem.style.opacity = '1';
+                    }).catch(() => {
+                        galleryItem.remove();
+                    });
+
                     galleryItem.addEventListener('click', () => {
                         openLightbox(images, index);
                     });
 
-                    galleryContainer.appendChild(galleryItem);
+                    fragment.appendChild(galleryItem);
                 });
+                galleryContainer.appendChild(fragment);
             }
 
             console.log(`✅ Gallery loaded successfully: ${images.length} images`);
