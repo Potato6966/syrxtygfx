@@ -16,65 +16,97 @@ document.addEventListener('DOMContentLoaded', function() {
     
     let buildUpActive = true;
 
-    const backgroundImages = [
-        '1401907185612755025_001.png',
-        '1401907185612755025_002.png',
-        '1401907185612755025_003.png',
-        '1401907185612755025_004.png',
-        '1401907185612755025_005.png',
-        '1401907185612755025_006.png',
-        '1401907185612755025_007.png',
-        '1401907185612755025_008.png',
-        '1401907185612755025_009.png',
-        '1401907185612755025_010.png',
-        '1401907185612755025_011.png',
-        '1401907185612755025_012.png',
-        '1401907185612755025_013.png',
-        '1401907185612755025_014.png',
-        '1401907185612755025_015.png',
-        '1401907185612755025_016.png',
-        '1401907185612755025_017.png',
-        '1401907185612755025_018.png',
-        '1401907185612755025_019.png',
-        '1401907185612755025_020.png',
-        '1401907185612755025_021.png',
-        '1401907185612755025_022.png',
-        '1401907185612755025_023.png',
-        '1401907222027702423_001.png',
-        '1401907222027702423_002.png',
-        '1401907222027702423_003.png',
-        '1401907222027702423_004.png',
-        '1401907222027702423_005.png',
-        '1401907222027702423_006.png',
-        '1401907222027702423_007.png',
-        '1401907222027702423_008.png',
-        '1401907222027702423_009.png',
-        '1401907222027702423_010.png',
-        '1401907222027702423_011.png',
-        '1401907222027702423_012.png',
-        '1401907222027702423_013.png',
-        '1401907222027702423_014.png',
-        '1401907222027702423_015.png',
-        '1401907222027702423_016.png',
-        '1401907222027702423_017.png',
-        '1401907222027702423_018.png',
-        '1401907222027702423_019.png',
-        '1401907222027702423_021.png',
-        '1401907222027702423_022.png',
-        '1401907222027702423_023.png',
-        '1401907222027702423_024.png',
-        '1401907222027702423_025.png',
-        '1401907543638282320_001.png',
-        '1401907543638282320_002.png',
-        '1401907543638282320_003.png',
-        '1401907543638282320_004.png',
-        '1401909711879802932_001.png',
-        '1401909711879802932_003.png'
-    ];
+    let backgroundImages = [];
 
     let selectedBackgroundImage = null;
 
-    function preloadBackgroundImages() {
+    async function listImagesInFolder(folder, extensions) {
+        try {
+            const res = await fetch(encodeURI(folder));
+            if (!res.ok) throw new Error('Directory listing not available');
+            const html = await res.text();
+            const regex = /href=["']([^"'?>]+\.(?:png|jpg|jpeg|gif|webp))["']/gi;
+            const results = new Set();
+            let match;
+            while ((match = regex.exec(html)) !== null) {
+                const href = match[1];
+                const lower = href.toLowerCase();
+                if (extensions.some(ext => lower.endsWith('.' + ext))) {
+                    // If href is absolute/relative, normalize to filename
+                    const filename = href.split('/').pop();
+                    if (filename) results.add(filename);
+                }
+            }
+            return Array.from(results);
+        } catch (e) {
+            return [];
+        }
+    }
+
+    async function getBackgroundImages() {
+        const dynamic = await listImagesInFolder('backround/', ['png', 'jpg', 'jpeg', 'gif', 'webp']);
+        if (dynamic.length > 0) return dynamic;
+        return [
+            '1401907185612755025_001.png',
+            '1401907185612755025_002.png',
+            '1401907185612755025_003.png',
+            '1401907185612755025_004.png',
+            '1401907185612755025_005.png',
+            '1401907185612755025_006.png',
+            '1401907185612755025_007.png',
+            '1401907185612755025_008.png',
+            '1401907185612755025_009.png',
+            '1401907185612755025_010.png',
+            '1401907185612755025_011.png',
+            '1401907185612755025_012.png',
+            '1401907185612755025_013.png',
+            '1401907185612755025_014.png',
+            '1401907185612755025_015.png',
+            '1401907185612755025_016.png',
+            '1401907185612755025_017.png',
+            '1401907185612755025_018.png',
+            '1401907185612755025_019.png',
+            '1401907185612755025_020.png',
+            '1401907185612755025_021.png',
+            '1401907185612755025_022.png',
+            '1401907185612755025_023.png',
+            '1401907222027702423_001.png',
+            '1401907222027702423_002.png',
+            '1401907222027702423_003.png',
+            '1401907222027702423_004.png',
+            '1401907222027702423_005.png',
+            '1401907222027702423_006.png',
+            '1401907222027702423_007.png',
+            '1401907222027702423_008.png',
+            '1401907222027702423_009.png',
+            '1401907222027702423_010.png',
+            '1401907222027702423_011.png',
+            '1401907222027702423_012.png',
+            '1401907222027702423_013.png',
+            '1401907222027702423_014.png',
+            '1401907222027702423_015.png',
+            '1401907222027702423_016.png',
+            '1401907222027702423_017.png',
+            '1401907222027702423_018.png',
+            '1401907222027702423_019.png',
+            '1401907222027702423_021.png',
+            '1401907222027702423_022.png',
+            '1401907222027702423_023.png',
+            '1401907222027702423_024.png',
+            '1401907222027702423_025.png',
+            '1401907543638282320_001.png',
+            '1401907543638282320_002.png',
+            '1401907543638282320_003.png',
+            '1401907543638282320_004.png',
+            '1401909711879802932_001.png',
+            '1401909711879802932_003.png'
+        ];
+    }
+
+    async function preloadBackgroundImages() {
+        if (!backgroundImages || backgroundImages.length === 0) {
+            backgroundImages = await getBackgroundImages();
+        }
         const priorityImages = backgroundImages.slice(0, 3);
         const promises = priorityImages.map(filename => {
             return preloadImage(`backround/${filename}`).catch(() => null);
@@ -146,59 +178,63 @@ document.addEventListener('DOMContentLoaded', function() {
         let loadedCount = 0;
         let totalCount = 0;
 
-
-        const hardcodedImages = {
-            'thumbnails': [
-                '1401907185612755025_001.png', '1401907185612755025_002.png', '1401907185612755025_003.png',
-                '1401907185612755025_004.png', '1401907185612755025_005.png', '1401907185612755025_006.png',
-                '1401907185612755025_007.png', '1401907185612755025_008.png', '1401907185612755025_009.png',
-                '1401907185612755025_010.png', '1401907185612755025_011.png', '1401907185612755025_012.png',
-                '1401907185612755025_013.png', '1401907185612755025_014.png', '1401907185612755025_015.png',
-                '1401907185612755025_016.png', '1401907185612755025_017.png', '1401907185612755025_018.png',
-                '1401907185612755025_019.png', '1401907185612755025_020.png', '1401907185612755025_021.png',
-                '1401907185612755025_022.png', '1401907185612755025_023.png',
-                '1401907222027702423_001.png', '1401907222027702423_002.png', '1401907222027702423_003.png',
-                '1401907222027702423_004.png', '1401907222027702423_005.png', '1401907222027702423_006.png',
-                '1401907222027702423_007.png', '1401907222027702423_008.png', '1401907222027702423_009.png',
-                '1401907222027702423_010.png', '1401907222027702423_011.png', '1401907222027702423_012.png',
-                '1401907222027702423_013.png', '1401907222027702423_014.png', '1401907222027702423_015.png',
-                '1401907222027702423_016.png', '1401907222027702423_017.png', '1401907222027702423_018.png',
-                '1401907222027702423_019.png', '1401907222027702423_021.png', '1401907222027702423_022.png',
-                '1401907222027702423_023.png', '1401907222027702423_024.png', '1401907222027702423_025.png',
-                '1401907543638282320_001.png', '1401907543638282320_002.png', '1401907543638282320_003.png',
-                '1401907543638282320_004.png', '1401909711879802932_001.png', '1401909711879802932_003.png',
-                'auto_test_001.png', 'auto_test_002.png', 'test_new_image_001.png', 'Screenshot 2025-08-28 131111.png', 'my_custom_design_001.png', 'lightspeed_test_001.png'
-            ],
-            'logos': [
-                '1401907146664181951_001.jpg', '1401907146664181951_002.png', '1401907146664181951_003.png',
-                '1401907146664181951_004.png', '1401907146664181951_005.png', '1401907146664181951_006.png'
-            ],
-            'product-banners': [
-                '150skin.png', '300skin.png', '50skin.png', 'image.png', 'precise_bo6_internal.png',
-                'PRecise_fn_priv.png', 'precise_perm_spf.png', 'precise_temp_woofer.png', 'Products_Banner.png',
-                'Velocity_Fortnite_Private.png', 'Venza_Accounts.png', 'Venza_Fortnite_Private.png',
-                'Venza_Fortnite_Slotted.png', 'Venza_Fortnite_Ultimate.png', 'Venza_Fortnite_Unreal.png',
-                'Venza_Spoofer.png', 'Venza_Valorant_INt.png'
-            ],
-            'product-boxes': [
-                'grow_a_garden_fa_account.png', 'image.png', 'neat_cod_priavte.png', 'neat_fn_private.png',
-                'neat_temp_spf.png', 'primal_cod_unlock_all.png', 'primal_fn_slotted.png', 'roblox_executors.png',
-                'roblox_replay.png', 'rubux_account_fa.png', 'zylo_fn_external.png', 'zylo_fn_ultimate.png',
-                'zylo_perm_spoofer.png', 'zylo_temp_spoofer.png', 'ZYRO_fn_og.png', 'ZYRO_fn_private.png',
-                'ZYRO_fn_pro.png', 'ZYRO_fn_public.png', 'ZYRO_fn_ultimate.png'
-            ]
+        const getCategoryFilenames = async (category) => {
+            const info = portfolioCategories[category];
+            const dynamic = await listImagesInFolder(info.folder, info.extensions);
+            if (dynamic.length > 0) return dynamic;
+            // Fallback to previous hardcoded list if directory listing is unavailable
+            const fallback = {
+                'thumbnails': [
+                    '1401907185612755025_001.png', '1401907185612755025_002.png', '1401907185612755025_003.png',
+                    '1401907185612755025_004.png', '1401907185612755025_005.png', '1401907185612755025_006.png',
+                    '1401907185612755025_007.png', '1401907185612755025_008.png', '1401907185612755025_009.png',
+                    '1401907185612755025_010.png', '1401907185612755025_011.png', '1401907185612755025_012.png',
+                    '1401907185612755025_013.png', '1401907185612755025_014.png', '1401907185612755025_015.png',
+                    '1401907185612755025_016.png', '1401907185612755025_017.png', '1401907185612755025_018.png',
+                    '1401907185612755025_019.png', '1401907185612755025_020.png', '1401907185612755025_021.png',
+                    '1401907185612755025_022.png', '1401907185612755025_023.png',
+                    '1401907222027702423_001.png', '1401907222027702423_002.png', '1401907222027702423_003.png',
+                    '1401907222027702423_004.png', '1401907222027702423_005.png', '1401907222027702423_006.png',
+                    '1401907222027702423_007.png', '1401907222027702423_008.png', '1401907222027702423_009.png',
+                    '1401907222027702423_010.png', '1401907222027702423_011.png', '1401907222027702423_012.png',
+                    '1401907222027702423_013.png', '1401907222027702423_014.png', '1401907222027702423_015.png',
+                    '1401907222027702423_016.png', '1401907222027702423_017.png', '1401907222027702423_018.png',
+                    '1401907222027702423_019.png', '1401907222027702423_021.png', '1401907222027702423_022.png',
+                    '1401907222027702423_023.png', '1401907222027702423_024.png', '1401907222027702423_025.png',
+                    '1401907543638282320_001.png', '1401907543638282320_002.png', '1401907543638282320_003.png',
+                    '1401907543638282320_004.png', '1401909711879802932_001.png', '1401909711879802932_003.png'
+                ],
+                'logos': [
+                    '1401907146664181951_001.jpg', '1401907146664181951_002.png', '1401907146664181951_003.png',
+                    '1401907146664181951_004.png', '1401907146664181951_005.png', '1401907146664181951_006.png'
+                ],
+                'product-banners': [
+                    '150skin.png', '300skin.png', '50skin.png', 'image.png', 'precise_bo6_internal.png',
+                    'PRecise_fn_priv.png', 'precise_perm_spf.png', 'precise_temp_woofer.png', 'Products_Banner.png',
+                    'Velocity_Fortnite_Private.png', 'Venza_Accounts.png', 'Venza_Fortnite_Private.png',
+                    'Venza_Fortnite_Slotted.png', 'Venza_Fortnite_Ultimate.png', 'Venza_Fortnite_Unreal.png',
+                    'Venza_Spoofer.png', 'Venza_Valorant_INt.png'
+                ],
+                'product-boxes': [
+                    'grow_a_garden_fa_account.png', 'image.png', 'neat_cod_priavte.png', 'neat_fn_private.png',
+                    'neat_temp_spf.png', 'primal_cod_unlock_all.png', 'primal_fn_slotted.png', 'roblox_executors.png',
+                    'roblox_replay.png', 'rubux_account_fa.png', 'zylo_fn_external.png', 'zylo_fn_ultimate.png',
+                    'zylo_perm_spoofer.png', 'zylo_temp_spoofer.png', 'ZYRO_fn_og.png', 'ZYRO_fn_private.png',
+                    'ZYRO_fn_pro.png', 'ZYRO_fn_public.png', 'ZYRO_fn_ultimate.png'
+                ]
+            };
+            return fallback[category] || [];
         };
 
 
-        Object.keys(portfolioCategories).forEach(category => {
+        for (const category of Object.keys(portfolioCategories)) {
             const categoryInfo = portfolioCategories[category];
-            const categoryFiles = hardcodedImages[category] || [];
-
+            const categoryFiles = await getCategoryFilenames(category);
             categoryFiles.forEach(filename => {
                 const imagePath = `${categoryInfo.folder}${filename}`;
                 allImagePaths.push(imagePath);
             });
-        });
+        }
 
         totalCount = allImagePaths.length;
         console.log(`⚡ Preloading ${totalCount} images with real-time progress...`);
@@ -231,16 +267,16 @@ document.addEventListener('DOMContentLoaded', function() {
         const categoryData = {};
         let maxImages = 0;
 
-        categories.forEach(category => {
+        for (const category of categories) {
             const categoryInfo = portfolioCategories[category];
-            const categoryImages = hardcodedImages[category] || [];
+            const categoryImages = await getCategoryFilenames(category);
             categoryData[category] = {
                 info: categoryInfo,
                 images: categoryImages,
                 index: 0
             };
             maxImages = Math.max(maxImages, categoryImages.length);
-        });
+        }
         
         console.log(`🔄 Round-Robin preloading: 4 images at a time (1 per category)...`);
 
@@ -304,51 +340,53 @@ document.addEventListener('DOMContentLoaded', function() {
     async function scanDirectoryForImages(category) {
         const categoryInfo = portfolioCategories[category];
         const images = [];
-
-        const hardcodedImages = {
-            'thumbnails': [
-                '1401907185612755025_001.png', '1401907185612755025_002.png', '1401907185612755025_003.png',
-                '1401907185612755025_004.png', '1401907185612755025_005.png', '1401907185612755025_006.png',
-                '1401907185612755025_007.png', '1401907185612755025_008.png', '1401907185612755025_009.png',
-                '1401907185612755025_010.png', '1401907185612755025_011.png', '1401907185612755025_012.png',
-                '1401907185612755025_013.png', '1401907185612755025_014.png', '1401907185612755025_015.png',
-                '1401907185612755025_016.png', '1401907185612755025_017.png', '1401907185612755025_018.png',
-                '1401907185612755025_019.png', '1401907185612755025_020.png', '1401907185612755025_021.png',
-                '1401907185612755025_022.png', '1401907185612755025_023.png',
-                '1401907222027702423_001.png', '1401907222027702423_002.png', '1401907222027702423_003.png',
-                '1401907222027702423_004.png', '1401907222027702423_005.png', '1401907222027702423_006.png',
-                '1401907222027702423_007.png', '1401907222027702423_008.png', '1401907222027702423_009.png',
-                '1401907222027702423_010.png', '1401907222027702423_011.png', '1401907222027702423_012.png',
-                '1401907222027702423_013.png', '1401907222027702423_014.png', '1401907222027702423_015.png',
-                '1401907222027702423_016.png', '1401907222027702423_017.png', '1401907222027702423_018.png',
-                '1401907222027702423_019.png', '1401907222027702423_021.png', '1401907222027702423_022.png',
-                '1401907222027702423_023.png', '1401907222027702423_024.png', '1401907222027702423_025.png',
-                '1401907543638282320_001.png', '1401907543638282320_002.png', '1401907543638282320_003.png',
-                '1401907543638282320_004.png', '1401909711879802932_001.png', '1401909711879802932_003.png',
-                'auto_test_001.png', 'auto_test_002.png', 'test_new_image_001.png', 'Screenshot 2025-08-28 131111.png', 'my_custom_design_001.png', 'lightspeed_test_001.png'
-            ],
-            'logos': [
-                '1401907146664181951_001.jpg', '1401907146664181951_002.png', '1401907146664181951_003.png',
-                '1401907146664181951_004.png', '1401907146664181951_005.png', '1401907146664181951_006.png',
-                'auto_test_logo_001.jpg'
-            ],
-            'product-banners': [
-                '150skin.png', '300skin.png', '50skin.png', 'image.png', 'precise_bo6_internal.png',
-                'PRecise_fn_priv.png', 'precise_perm_spf.png', 'precise_temp_woofer.png', 'Products_Banner.png',
-                'Velocity_Fortnite_Private.png', 'Venza_Accounts.png', 'Venza_Fortnite_Private.png',
-                'Venza_Fortnite_Slotted.png', 'Venza_Fortnite_Ultimate.png', 'Venza_Fortnite_Unreal.png',
-                'Venza_Spoofer.png', 'Venza_Valorant_INt.png'
-            ],
-            'product-boxes': [
-                'grow_a_garden_fa_account.png', 'image.png', 'neat_cod_priavte.png', 'neat_fn_private.png',
-                'neat_temp_spf.png', 'primal_cod_unlock_all.png', 'primal_fn_slotted.png', 'roblox_executors.png',
-                'roblox_replay.png', 'rubux_account_fa.png', 'zylo_fn_external.png', 'zylo_fn_ultimate.png',
-                'zylo_perm_spoofer.png', 'zylo_temp_spoofer.png', 'ZYRO_fn_og.png', 'ZYRO_fn_private.png',
-                'ZYRO_fn_pro.png', 'ZYRO_fn_public.png', 'ZYRO_fn_ultimate.png'
-            ]
-        };
-
-        const categoryFiles = hardcodedImages[category] || [];
+        // Try dynamic directory listing first
+        let categoryFiles = await listImagesInFolder(categoryInfo.folder, categoryInfo.extensions);
+        if (!categoryFiles || categoryFiles.length === 0) {
+            // Fallback to previous hardcoded list to ensure functionality if listing is not available
+            const fallback = {
+                'thumbnails': [
+                    '1401907185612755025_001.png', '1401907185612755025_002.png', '1401907185612755025_003.png',
+                    '1401907185612755025_004.png', '1401907185612755025_005.png', '1401907185612755025_006.png',
+                    '1401907185612755025_007.png', '1401907185612755025_008.png', '1401907185612755025_009.png',
+                    '1401907185612755025_010.png', '1401907185612755025_011.png', '1401907185612755025_012.png',
+                    '1401907185612755025_013.png', '1401907185612755025_014.png', '1401907185612755025_015.png',
+                    '1401907185612755025_016.png', '1401907185612755025_017.png', '1401907185612755025_018.png',
+                    '1401907185612755025_019.png', '1401907185612755025_020.png', '1401907185612755025_021.png',
+                    '1401907185612755025_022.png', '1401907185612755025_023.png',
+                    '1401907222027702423_001.png', '1401907222027702423_002.png', '1401907222027702423_003.png',
+                    '1401907222027702423_004.png', '1401907222027702423_005.png', '1401907222027702423_006.png',
+                    '1401907222027702423_007.png', '1401907222027702423_008.png', '1401907222027702423_009.png',
+                    '1401907222027702423_010.png', '1401907222027702423_011.png', '1401907222027702423_012.png',
+                    '1401907222027702423_013.png', '1401907222027702423_014.png', '1401907222027702423_015.png',
+                    '1401907222027702423_016.png', '1401907222027702423_017.png', '1401907222027702423_018.png',
+                    '1401907222027702423_019.png', '1401907222027702423_021.png', '1401907222027702423_022.png',
+                    '1401907222027702423_023.png', '1401907222027702423_024.png', '1401907222027702423_025.png',
+                    '1401907543638282320_001.png', '1401907543638282320_002.png', '1401907543638282320_003.png',
+                    '1401907543638282320_004.png', '1401909711879802932_001.png', '1401909711879802932_003.png'
+                ],
+                'logos': [
+                    '1401907146664181951_001.jpg', '1401907146664181951_002.png', '1401907146664181951_003.png',
+                    '1401907146664181951_004.png', '1401907146664181951_005.png', '1401907146664181951_006.png',
+                    'auto_test_logo_001.jpg'
+                ],
+                'product-banners': [
+                    '150skin.png', '300skin.png', '50skin.png', 'image.png', 'precise_bo6_internal.png',
+                    'PRecise_fn_priv.png', 'precise_perm_spf.png', 'precise_temp_woofer.png', 'Products_Banner.png',
+                    'Velocity_Fortnite_Private.png', 'Venza_Accounts.png', 'Venza_Fortnite_Private.png',
+                    'Venza_Fortnite_Slotted.png', 'Venza_Fortnite_Ultimate.png', 'Venza_Fortnite_Unreal.png',
+                    'Venza_Spoofer.png', 'Venza_Valorant_INt.png'
+                ],
+                'product-boxes': [
+                    'grow_a_garden_fa_account.png', 'image.png', 'neat_cod_priavte.png', 'neat_fn_private.png',
+                    'neat_temp_spf.png', 'primal_cod_unlock_all.png', 'primal_fn_slotted.png', 'roblox_executors.png',
+                    'roblox_replay.png', 'rubux_account_fa.png', 'zylo_fn_external.png', 'zylo_fn_ultimate.png',
+                    'zylo_perm_spoofer.png', 'zylo_temp_spoofer.png', 'ZYRO_fn_og.png', 'ZYRO_fn_private.png',
+                    'ZYRO_fn_pro.png', 'ZYRO_fn_public.png', 'ZYRO_fn_ultimate.png'
+                ]
+            };
+            categoryFiles = fallback[category] || [];
+        }
         
         console.log(`🚀 ULTRA-FAST loading ${categoryFiles.length} images for category: ${category}`);
 
