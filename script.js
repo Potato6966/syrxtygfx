@@ -465,21 +465,18 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     async function loadPortfolioImages() {
-        const expectedCounts = {
-            'thumbnails': 56,
-            'logos': 6,
-            'product-banners': 17,
-            'product-boxes': 19
-        };
-
-        Object.keys(portfolioCategories).forEach(category => {
-            const expectedCount = expectedCounts[category] || 0;
-            updatePortfolioCount(category, expectedCount);
-        });
-
-        console.log('⚡ Portfolio counters set to expected values instantly!');
-
         const categories = Object.keys(portfolioCategories);
+
+        // Set counters based on actual discovered files (manifest or listing), verified to exist
+        await Promise.all(categories.map(async (category) => {
+            const info = portfolioCategories[category];
+            const files = await listImagesInFolder(info.folder, info.extensions);
+            const full = files.map(f => `${info.folder}${f}`);
+            const valid = await verifyImagesExist(full);
+            updatePortfolioCount(category, valid.length);
+        }));
+
+        console.log('⚡ Portfolio counters set to real values from folders.');
         
         for (const category of categories) {
             try {
@@ -521,14 +518,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
 
                     portfolioData[category] = thumbnailImages;
-                    if (thumbnailImages.length !== expectedCounts[category]) {
-                        updatePortfolioCount(category, thumbnailImages.length);
-                    }
+                    updatePortfolioCount(category, thumbnailImages.length);
                 } else {
                     portfolioData[category] = images;
-                    if (images.length !== expectedCounts[category]) {
-                        updatePortfolioCount(category, images.length);
-                    }
+                    updatePortfolioCount(category, images.length);
                 }
 
                 console.log(`✅ Loaded ${images.length} images for category: ${category}`);
@@ -580,12 +573,6 @@ document.addEventListener('DOMContentLoaded', function() {
         modalTitle.textContent = categoryNames[category] || 'Portfolio';
 
         const images = portfolioData[category] || [];
-        const expectedCounts = {
-            'thumbnails': 56,
-            'logos': 6,
-            'product-banners': 17,
-            'product-boxes': 19
-        };
 
         modal.style.display = 'block';
         document.body.style.overflow = 'hidden';
@@ -633,7 +620,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="progress-fill" id="gallery-progress-fill" style="width: 0%"></div>
                 </div>
                 <div class="loading-stats">
-                    <span id="loaded-count">0</span> / ${expectedCounts[category] || 0} images loaded
+                    <span id="loaded-count">0</span> images loading
                 </div>
                 <div class="loading-time">
                     <span id="estimated-time">Estimating...</span>
