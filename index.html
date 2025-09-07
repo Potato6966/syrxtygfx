@@ -731,12 +731,13 @@
                 .then(registration => {
                     console.log('Service Worker registered:', registration);
                     
-                    // Listen for manifest updates
+                    // Listen for service worker messages
                     navigator.serviceWorker.addEventListener('message', event => {
-                        if (event.data.type === 'MANIFEST_UPDATED' || event.data.type === 'MANIFEST_CHANGED') {
-                            console.log('New images detected, refreshing page...');
-                            // Show a subtle notification before refresh
+                        if (event.data.type === 'DOWNLOAD_STARTED') {
+                            console.log(`Downloading ${event.data.count} new images in background...`);
+                            // Show download notification
                             const notification = document.createElement('div');
+                            notification.id = 'download-notification';
                             notification.style.cssText = `
                                 position: fixed;
                                 top: 20px;
@@ -748,14 +749,34 @@
                                 font-weight: 600;
                                 z-index: 20000;
                                 box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+                                transition: all 0.3s ease;
                             `;
-                            notification.textContent = '🔄 New images detected! Refreshing...';
+                            notification.innerHTML = `
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <div class="spinner" style="width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top: 2px solid white; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                                    <span>Downloading ${event.data.count} new images...</span>
+                                </div>
+                            `;
                             document.body.appendChild(notification);
+                        }
+                        
+                        if (event.data.type === 'DOWNLOAD_COMPLETED') {
+                            console.log(`Download completed! Refreshing page...`);
+                            // Update notification
+                            const notification = document.getElementById('download-notification');
+                            if (notification) {
+                                notification.innerHTML = `
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <span>✅</span>
+                                        <span>${event.data.count} images ready! Refreshing...</span>
+                                    </div>
+                                `;
+                            }
                             
-                            // Force refresh after a short delay
+                            // Refresh after download is complete
                             setTimeout(() => {
                                 window.location.reload(true);
-                            }, 2000);
+                            }, 1500);
                         }
                     });
                 })
@@ -763,6 +784,16 @@
                     console.log('Service Worker registration failed:', error);
                 });
         }
+        
+        // Add spinner animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+        `;
+        document.head.appendChild(style);
     </script>
 </body>
 </html>
