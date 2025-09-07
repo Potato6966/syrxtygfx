@@ -64,6 +64,84 @@ self.addEventListener('fetch', (event) => {
 
 // Store last known manifest for comparison
 let lastManifestHash = null;
+let isDownloading = false;
+
+// Function to preload new images
+async function preloadNewImages(newManifest, oldManifest) {
+    if (isDownloading) return;
+    isDownloading = true;
+    
+    const newImages = [];
+    const folders = ['backround', 'thumbnails', 'logos', 'product-banners', 'product-boxes'];
+    
+    // Find new images by comparing manifests
+    folders.forEach(folder => {
+        const oldFiles = oldManifest[folder] || [];
+        const newFiles = newManifest[folder] || [];
+        const folderPaths = {
+            'backround': 'backround/',
+            'thumbnails': 'Thumbnails/',
+            'logos': 'Logos/',
+            'product-banners': 'Product banners/',
+            'product-boxes': 'Product boxes/'
+        };
+        
+        newFiles.forEach(file => {
+            if (!oldFiles.includes(file)) {
+                newImages.push(folderPaths[folder] + file);
+            }
+        });
+    });
+    
+    if (newImages.length === 0) {
+        isDownloading = false;
+        return;
+    }
+    
+    console.log(`Preloading ${newImages.length} new images...`);
+    
+    // Notify clients that download started
+    self.clients.matchAll().then(clients => {
+        clients.forEach(client => {
+            client.postMessage({
+                type: 'DOWNLOAD_STARTED',
+                count: newImages.length
+            });
+        });
+    });
+    
+    // Preload all new images
+    const downloadPromises = newImages.map(imagePath => {
+        return fetch(imagePath, { cache: 'no-store' })
+            .then(response => {
+                if (response.ok) {
+                    return caches.open(CACHE_NAME).then(cache => {
+                        return cache.put(imagePath, response.clone());
+                    });
+                }
+            })
+            .catch(err => console.log(`Failed to preload ${imagePath}:`, err));
+    });
+    
+    try {
+        await Promise.allSettled(downloadPromises);
+        console.log('All new images preloaded successfully');
+        
+        // Notify clients that download finished
+        self.clients.matchAll().then(clients => {
+            clients.forEach(client => {
+                client.postMessage({
+                    type: 'DOWNLOAD_COMPLETED',
+                    count: newImages.length
+                });
+            });
+        });
+    } catch (err) {
+        console.log('Some images failed to preload:', err);
+    }
+    
+    isDownloading = false;
+}
 
 // Periodic manifest check
 setInterval(() => {
@@ -73,20 +151,18 @@ setInterval(() => {
             // Create a simple hash of the manifest content
             const currentHash = JSON.stringify(data);
             
-            // Only notify if manifest actually changed
+            // Only proceed if manifest actually changed
             if (lastManifestHash && lastManifestHash !== currentHash) {
-                console.log('Manifest changed, notifying clients...');
-                self.clients.matchAll().then(clients => {
-                    clients.forEach(client => {
-                        client.postMessage({
-                            type: 'MANIFEST_CHANGED',
-                            manifest: data
-                        });
-                    });
-                });
+                console.log('Manifest changed, starting background download...');
+                
+                // Get old manifest for comparison
+                const oldManifest = lastManifestHash ? JSON.parse(lastManifestHash) : {};
+                
+                // Start background download
+                preloadNewImages(data, oldManifest);
             }
             
             lastManifestHash = currentHash;
         })
         .catch(err => console.log('Periodic check failed:', err));
-}, 60000); // Check every 60 seconds instead of 30
+}, 60000); // Check every 60 seconds
