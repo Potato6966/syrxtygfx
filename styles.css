@@ -984,6 +984,47 @@ body::before {
     display: inline-block;
 }
 
+/* Smooth, accessible focus styles without harsh outlines */
+button,
+.btn,
+.cart-button,
+.quantity-btn,
+.remove-item,
+.modal-close,
+.cart-close,
+.lightbox-prev,
+.lightbox-next,
+.portfolio-btn {
+    outline: none;
+}
+
+button:focus,
+.btn:focus,
+.cart-button:focus,
+.quantity-btn:focus,
+.remove-item:focus,
+.modal-close:focus,
+.cart-close:focus,
+.lightbox-prev:focus,
+.lightbox-next:focus,
+.portfolio-btn:focus {
+    outline: none;
+}
+
+button:focus-visible,
+.btn:focus-visible,
+.cart-button:focus-visible,
+.quantity-btn:focus-visible,
+.remove-item:focus-visible,
+.modal-close:focus-visible,
+.cart-close:focus-visible,
+.lightbox-prev:focus-visible,
+.lightbox-next:focus-visible,
+.portfolio-btn:focus-visible {
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.35), 0 6px 20px rgba(59, 130, 246, 0.25);
+    border-color: rgba(59, 130, 246, 0.6);
+}
+
 .btn-primary {
     background: linear-gradient(135deg, 
         rgba(236, 72, 153, 0.9) 0%, 
