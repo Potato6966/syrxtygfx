@@ -18,6 +18,8 @@
 </head>
 <body class="bw-mode build-up-mode">
     <div class="light-overlay"></div>
+    <!-- Mouse tracking light -->
+    <div class="mouse-light" id="mouseLight"></div>
     <div class="color-splash-overlay">
         <div class="splash-content">
             <h1 class="splash-title">SYRXTY</h1>
@@ -725,6 +727,36 @@
     <script>
         lucide.createIcons();
         
+        // Initialize mouse tracking light
+        function initializeMouseTracking() {
+            const mouseLight = document.getElementById('mouseLight');
+            let mouseX = 0;
+            let mouseY = 0;
+            let lightX = 0;
+            let lightY = 0;
+
+            document.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+            });
+
+            function updateLightPosition() {
+                // Smooth following with easing
+                lightX += (mouseX - lightX) * 0.1;
+                lightY += (mouseY - lightY) * 0.1;
+                
+                mouseLight.style.left = lightX - 150 + 'px';
+                mouseLight.style.top = lightY - 150 + 'px';
+                
+                requestAnimationFrame(updateLightPosition);
+            }
+
+            updateLightPosition();
+        }
+        
+        // Start mouse tracking when page loads
+        document.addEventListener('DOMContentLoaded', initializeMouseTracking);
+        
         // Register service worker for auto-refresh
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js')
@@ -767,7 +799,8 @@
                             if (notification) {
                                 notification.innerHTML = `
                                     <div style="display: flex; align-items: center; gap: 10px;">
-                                        <span>✅ ${event.data.count} images ready! Refreshing...</span>
+                                        <span>✅</span>
+                                        <span>${event.data.count} images ready! Refreshing...</span>
                                     </div>
                                 `;
                             }
