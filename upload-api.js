@@ -1,5 +1,3 @@
-// Node.js API for handling file uploads
-// This would be deployed as a serverless function or API endpoint
 
 const express = require('express');
 const multer = require('multer');
@@ -10,7 +8,6 @@ const crypto = require('crypto');
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Configuration
 const UPLOAD_CONFIG = {
     password: process.env.ADMIN_PASSWORD || 'FullBack11!',
     twoFactorAnswer: process.env.TWO_FACTOR_ANSWER || 'photoshop',
@@ -19,7 +16,6 @@ const UPLOAD_CONFIG = {
     allowedTypes: ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp']
 };
 
-// Category mapping
 const CATEGORIES = {
     'thumbnails': 'Thumbnails/',
     'logos': 'Logos/',
@@ -27,11 +23,9 @@ const CATEGORIES = {
     'product-boxes': 'Product boxes/'
 };
 
-// Middleware
 app.use(express.json());
 app.use(express.static('public'));
 
-// Configure multer for file uploads
 const storage = multer.diskStorage({
     destination: async (req, file, cb) => {
         const category = req.body.category;
@@ -45,7 +39,6 @@ const storage = multer.diskStorage({
         }
     },
     filename: (req, file, cb) => {
-        // Generate unique filename with timestamp
         const timestamp = Date.now();
         const randomString = crypto.randomBytes(4).toString('hex');
         const extension = path.extname(file.originalname);
@@ -68,7 +61,6 @@ const upload = multer({
     }
 });
 
-// Authentication middleware
 function authenticateAdmin(req, res, next) {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -85,14 +77,11 @@ function authenticateAdmin(req, res, next) {
     next();
 }
 
-// Routes
 
-// Health check
 app.get('/health', (req, res) => {
     res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
-// Authentication endpoint
 app.post('/api/auth', (req, res) => {
     const { password, twoFactor } = req.body;
     
@@ -113,7 +102,6 @@ app.post('/api/auth', (req, res) => {
     }
 });
 
-// Upload endpoint
 app.post('/api/upload', authenticateAdmin, upload.single('file'), async (req, res) => {
     try {
         if (!req.file) {
@@ -134,10 +122,8 @@ app.post('/api/upload', authenticateAdmin, upload.single('file'), async (req, re
             uploadedAt: new Date().toISOString()
         };
 
-        // Update manifest file
         await updateManifest(category, fileInfo);
 
-        // Trigger website cache refresh
         await triggerCacheRefresh();
 
         res.json({
@@ -155,7 +141,6 @@ app.post('/api/upload', authenticateAdmin, upload.single('file'), async (req, re
     }
 });
 
-// Get upload statistics
 app.get('/api/stats', authenticateAdmin, async (req, res) => {
     try {
         const stats = {};
@@ -185,7 +170,6 @@ app.get('/api/stats', authenticateAdmin, async (req, res) => {
     }
 });
 
-// Delete file endpoint
 app.delete('/api/file/:category/:filename', authenticateAdmin, async (req, res) => {
     try {
         const { category, filename } = req.params;
@@ -199,10 +183,8 @@ app.delete('/api/file/:category/:filename', authenticateAdmin, async (req, res) 
         try {
             await fs.unlink(filePath);
             
-            // Update manifest
             await updateManifest(category, null, filename);
             
-            // Trigger cache refresh
             await triggerCacheRefresh();
             
             res.json({ 
@@ -224,7 +206,6 @@ app.delete('/api/file/:category/:filename', authenticateAdmin, async (req, res) 
     }
 });
 
-// Helper functions
 
 async function updateManifest(category, fileInfo, deletedFilename = null) {
     const manifestPath = './images-manifest.json';
@@ -235,7 +216,6 @@ async function updateManifest(category, fileInfo, deletedFilename = null) {
             const manifestData = await fs.readFile(manifestPath, 'utf8');
             manifest = JSON.parse(manifestData);
         } catch (error) {
-            // Manifest doesn't exist, create new one
         }
 
         if (!manifest[category]) {
@@ -243,17 +223,14 @@ async function updateManifest(category, fileInfo, deletedFilename = null) {
         }
 
         if (deletedFilename) {
-            // Remove file from manifest
             manifest[category] = manifest[category].filter(file => file !== deletedFilename);
         } else if (fileInfo) {
-            // Add file to manifest
             const filename = path.basename(fileInfo.filename);
             if (!manifest[category].includes(filename)) {
                 manifest[category].push(filename);
             }
         }
 
-        // Sort files
         manifest[category].sort();
 
         await fs.writeFile(manifestPath, JSON.stringify(manifest, null, 2));
@@ -265,17 +242,11 @@ async function updateManifest(category, fileInfo, deletedFilename = null) {
 
 async function triggerCacheRefresh() {
     try {
-        // This could trigger various cache refresh mechanisms:
         
-        // 1. Update a cache invalidation timestamp
         const cacheTimestamp = Date.now();
         await fs.writeFile('./cache-timestamp.txt', cacheTimestamp.toString());
         
-        // 2. Send webhook to your hosting service (if supported)
-        // await sendWebhook();
         
-        // 3. Update service worker cache version
-        // await updateServiceWorkerCache();
         
         console.log('Cache refresh triggered');
     } catch (error) {
@@ -310,7 +281,6 @@ function formatBytes(bytes) {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
 }
 
-// Error handling middleware
 app.use((error, req, res, next) => {
     if (error instanceof multer.MulterError) {
         if (error.code === 'LIMIT_FILE_SIZE') {
@@ -328,7 +298,6 @@ app.use((error, req, res, next) => {
     });
 });
 
-// Start server
 app.listen(PORT, () => {
     console.log(`SYRXTY Upload API running on port ${PORT}`);
     console.log(`Admin password: ${UPLOAD_CONFIG.password}`);
