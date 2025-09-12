@@ -20,6 +20,392 @@ document.addEventListener('DOMContentLoaded', function() {
 
     let selectedBackgroundImage = null;
 
+    // ===== ADVANCED CACHING SYSTEM =====
+    class ImageCacheManager {
+        constructor() {
+            this.dbName = 'SYRXTY_ImageCache';
+            this.dbVersion = 1;
+            this.db = null;
+            this.cacheVersion = 'v1.0';
+            this.maxCacheSize = 100 * 1024 * 1024; // 100MB
+            this.cacheStatus = {
+                totalImages: 0,
+                cachedImages: 0,
+                downloading: false,
+                lastUpdate: null
+            };
+        }
+
+        async init() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(this.dbName, this.dbVersion);
+                
+                request.onerror = () => reject(request.error);
+                request.onsuccess = () => {
+                    this.db = request.result;
+                    console.log('✅ Image cache database initialized');
+                    this.updateCacheStatus();
+                    resolve();
+                };
+                
+                request.onupgradeneeded = (event) => {
+                    const db = event.target.result;
+                    
+                    // Create object stores for different image categories
+                    const categories = ['thumbnails', 'logos', 'product-banners', 'product-boxes', 'backround'];
+                    
+                    categories.forEach(category => {
+                        if (!db.objectStoreNames.contains(category)) {
+                            const store = db.createObjectStore(category, { keyPath: 'path' });
+                            store.createIndex('timestamp', 'timestamp', { unique: false });
+                            store.createIndex('size', 'size', { unique: false });
+                        }
+                    });
+                    
+                    // Create metadata store
+                    if (!db.objectStoreNames.contains('metadata')) {
+                        const metadataStore = db.createObjectStore('metadata', { keyPath: 'key' });
+                    }
+                };
+            });
+        }
+
+        async getCachedImage(path) {
+            if (!this.db) return null;
+            
+            const category = this.getCategoryFromPath(path);
+            if (!category) return null;
+            
+            return new Promise((resolve) => {
+                const transaction = this.db.transaction([category], 'readonly');
+                const store = transaction.objectStore(category);
+                const request = store.get(path);
+                
+                request.onsuccess = () => {
+                    const result = request.result;
+                    if (result && result.blob) {
+                        const url = URL.createObjectURL(result.blob);
+                        resolve({ url, cached: true, timestamp: result.timestamp });
+                    } else {
+                        resolve(null);
+                    }
+                };
+                
+                request.onerror = () => resolve(null);
+            });
+        }
+
+        async cacheImage(path, blob) {
+            if (!this.db) return false;
+            
+            const category = this.getCategoryFromPath(path);
+            if (!category) return false;
+            
+            return new Promise((resolve) => {
+                const transaction = this.db.transaction([category], 'readwrite');
+                const store = transaction.objectStore(category);
+                
+                const imageData = {
+                    path: path,
+                    blob: blob,
+                    timestamp: Date.now(),
+                    size: blob.size
+                };
+                
+                const request = store.put(imageData);
+                
+                request.onsuccess = () => {
+                    console.log(`💾 Cached: ${path}`);
+                    resolve(true);
+                };
+                
+                request.onerror = () => {
+                    console.warn(`❌ Failed to cache: ${path}`);
+                    resolve(false);
+                };
+            });
+        }
+
+        async downloadAndCacheImage(path) {
+            try {
+                const response = await fetch(path);
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                
+                const blob = await response.blob();
+                await this.cacheImage(path, blob);
+                return blob;
+            } catch (error) {
+                console.warn(`❌ Failed to download: ${path}`, error);
+                return null;
+            }
+        }
+
+        async preloadCategoryImages(category, imagePaths) {
+            console.log(`🚀 Preloading ${imagePaths.length} images for ${category}...`);
+            
+            const results = {
+                cached: 0,
+                downloaded: 0,
+                failed: 0
+            };
+
+            // Check what's already cached
+            const cacheChecks = await Promise.all(
+                imagePaths.map(async (path) => {
+                    const cached = await this.getCachedImage(path);
+                    return { path, cached: !!cached };
+                })
+            );
+
+            const uncachedPaths = cacheChecks
+                .filter(item => !item.cached)
+                .map(item => item.path);
+
+            results.cached = cacheChecks.length - uncachedPaths.length;
+
+            // Download uncached images in batches
+            const batchSize = 3;
+            for (let i = 0; i < uncachedPaths.length; i += batchSize) {
+                const batch = uncachedPaths.slice(i, i + batchSize);
+                const batchPromises = batch.map(async (path) => {
+                    const blob = await this.downloadAndCacheImage(path);
+                    if (blob) {
+                        results.downloaded++;
+                        return { path, success: true };
+                    } else {
+                        results.failed++;
+                        return { path, success: false };
+                    }
+                });
+
+                await Promise.allSettled(batchPromises);
+                
+                // Update progress
+                const progress = Math.round(((i + batch.length) / uncachedPaths.length) * 100);
+                this.updatePreloadProgress(category, progress, results);
+                
+                // Small delay between batches
+                await new Promise(resolve => setTimeout(resolve, 100));
+            }
+
+            console.log(`✅ ${category} preload complete:`, results);
+            return results;
+        }
+
+        async getCachedImageUrl(path) {
+            const cached = await this.getCachedImage(path);
+            if (cached) {
+                return cached.url;
+            }
+            return null;
+        }
+
+        async syncWithManifest() {
+            try {
+                const manifest = await getImagesManifest();
+                if (!manifest) return { updated: false, message: 'No manifest available' };
+
+                const allPaths = [];
+                Object.keys(manifest).forEach(category => {
+                    if (Array.isArray(manifest[category])) {
+                        const categoryInfo = portfolioCategories[category];
+                        if (categoryInfo) {
+                            manifest[category].forEach(filename => {
+                                allPaths.push(`${categoryInfo.folder}${filename}`);
+                            });
+                        }
+                    }
+                });
+
+                // Check for new/removed images
+                const currentCached = await this.getAllCachedPaths();
+                const newPaths = allPaths.filter(path => !currentCached.includes(path));
+                const removedPaths = currentCached.filter(path => !allPaths.includes(path));
+
+                if (newPaths.length > 0 || removedPaths.length > 0) {
+                    console.log(`🔄 Cache sync: +${newPaths.length} new, -${removedPaths.length} removed`);
+                    
+                    // Remove deleted images
+                    for (const path of removedPaths) {
+                        await this.removeCachedImage(path);
+                    }
+                    
+                    // Download new images
+                    if (newPaths.length > 0) {
+                        this.cacheStatus.downloading = true;
+                        this.showCacheNotification(`Downloading ${newPaths.length} new images...`);
+                        
+                        const batchSize = 2;
+                        for (let i = 0; i < newPaths.length; i += batchSize) {
+                            const batch = newPaths.slice(i, i + batchSize);
+                            await Promise.allSettled(
+                                batch.map(path => this.downloadAndCacheImage(path))
+                            );
+                            
+                            const progress = Math.round(((i + batch.length) / newPaths.length) * 100);
+                            this.showCacheNotification(`Downloading... ${progress}%`);
+                            
+                            await new Promise(resolve => setTimeout(resolve, 200));
+                        }
+                        
+                        this.cacheStatus.downloading = false;
+                        this.showCacheNotification(`✅ ${newPaths.length} images ready!`, 'success');
+                    }
+                    
+                    this.updateCacheStatus();
+                    return { updated: true, new: newPaths.length, removed: removedPaths.length };
+                }
+
+                return { updated: false, message: 'Cache is up to date' };
+            } catch (error) {
+                console.error('Cache sync failed:', error);
+                return { updated: false, error: error.message };
+            }
+        }
+
+        async getAllCachedPaths() {
+            if (!this.db) return [];
+            
+            const allPaths = [];
+            const categories = ['thumbnails', 'logos', 'product-banners', 'product-boxes', 'backround'];
+            
+            for (const category of categories) {
+                const paths = await new Promise((resolve) => {
+                    const transaction = this.db.transaction([category], 'readonly');
+                    const store = transaction.objectStore(category);
+                    const request = store.getAll();
+                    
+                    request.onsuccess = () => {
+                        resolve(request.result.map(item => item.path));
+                    };
+                    request.onerror = () => resolve([]);
+                });
+                
+                allPaths.push(...paths);
+            }
+            
+            return allPaths;
+        }
+
+        async removeCachedImage(path) {
+            if (!this.db) return false;
+            
+            const category = this.getCategoryFromPath(path);
+            if (!category) return false;
+            
+            return new Promise((resolve) => {
+                const transaction = this.db.transaction([category], 'readwrite');
+                const store = transaction.objectStore(category);
+                const request = store.delete(path);
+                
+                request.onsuccess = () => {
+                    console.log(`🗑️ Removed from cache: ${path}`);
+                    resolve(true);
+                };
+                request.onerror = () => resolve(false);
+            });
+        }
+
+        getCategoryFromPath(path) {
+            if (path.includes('Thumbnails/')) return 'thumbnails';
+            if (path.includes('Logos/')) return 'logos';
+            if (path.includes('Product banners/')) return 'product-banners';
+            if (path.includes('Product boxes/')) return 'product-boxes';
+            if (path.includes('backround/')) return 'backround';
+            return null;
+        }
+
+        updatePreloadProgress(category, percentage, results) {
+            const loadingElements = document.querySelectorAll('.count-text');
+            loadingElements.forEach(element => {
+                if (element.textContent.includes('Loading') || element.textContent.includes('...')) {
+                    element.textContent = `${percentage}%`;
+                }
+            });
+
+            const galleryLoadingText = document.querySelector('#gallery-container p');
+            if (galleryLoadingText && galleryLoadingText.textContent.includes('Loading')) {
+                galleryLoadingText.textContent = `Loading ${category}... ${percentage}%`;
+            }
+        }
+
+        showCacheNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.id = 'cache-notification';
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? 'linear-gradient(135deg, #10b981, #34d399)' : 'linear-gradient(135deg, #3b82f6, #93c5fd)'};
+                color: white;
+                padding: 15px 25px;
+                border-radius: 10px;
+                font-weight: 600;
+                z-index: 20000;
+                box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+                transition: all 0.3s ease;
+                max-width: 300px;
+            `;
+            notification.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    ${type === 'success' ? '<span>✅</span>' : '<div class="spinner" style="width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top: 2px solid white; border-radius: 50%; animation: spin 1s linear infinite;"></div>'}
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            // Remove existing notification
+            const existing = document.getElementById('cache-notification');
+            if (existing) existing.remove();
+            
+            document.body.appendChild(notification);
+            
+            if (type === 'success') {
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.style.opacity = '0';
+                        notification.style.transform = 'translateX(100%)';
+                        setTimeout(() => notification.remove(), 300);
+                    }
+                }, 3000);
+            }
+        }
+
+        async updateCacheStatus() {
+            if (!this.db) return;
+            
+            const allPaths = await this.getAllCachedPaths();
+            this.cacheStatus.cachedImages = allPaths.length;
+            this.cacheStatus.lastUpdate = new Date().toISOString();
+            
+            console.log(`📊 Cache status: ${allPaths.length} images cached`);
+        }
+
+        async clearCache() {
+            if (!this.db) return false;
+            
+            const categories = ['thumbnails', 'logos', 'product-banners', 'product-boxes', 'backround'];
+            
+            for (const category of categories) {
+                await new Promise((resolve) => {
+                    const transaction = this.db.transaction([category], 'readwrite');
+                    const store = transaction.objectStore(category);
+                    const request = store.clear();
+                    
+                    request.onsuccess = () => resolve();
+                    request.onerror = () => resolve();
+                });
+            }
+            
+            this.cacheStatus.cachedImages = 0;
+            console.log('🗑️ Cache cleared');
+            return true;
+        }
+    }
+
+    // Initialize cache manager
+    const cacheManager = new ImageCacheManager();
+    let cacheInitialized = false;
+
     async function getImagesManifest() {
         if (window.__imagesManifest !== undefined) return window.__imagesManifest;
         try {
@@ -176,13 +562,30 @@ document.addEventListener('DOMContentLoaded', function() {
         document.head.appendChild(style);
     }
 
-    function preloadImage(src) {
-        return new Promise((resolve, reject) => {
-            if (preloadedImages.has(src)) {
-                resolve(preloadedImages.get(src));
-                return;
+    async function preloadImage(src) {
+        // Check if already preloaded in memory
+        if (preloadedImages.has(src)) {
+            return preloadedImages.get(src);
+        }
+        
+        // Check cache first for instant loading
+        if (cacheInitialized) {
+            const cachedUrl = await cacheManager.getCachedImageUrl(src);
+            if (cachedUrl) {
+                return new Promise((resolve, reject) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        preloadedImages.set(src, img);
+                        resolve(img);
+                    };
+                    img.onerror = () => reject(new Error(`Failed to load cached image: ${src}`));
+                    img.src = cachedUrl;
+                });
             }
-            
+        }
+        
+        // Fallback to network loading
+        return new Promise((resolve, reject) => {
             const img = new Image();
             img.onload = () => {
                 preloadedImages.set(src, img);
@@ -366,6 +769,151 @@ document.addEventListener('DOMContentLoaded', function() {
         window.preloadProgress.updateUI();
 
         return successful;
+    }
+
+    async function preloadAllPortfolioImagesWithCache() {
+        console.log('🚀 Cache-aware preloading with progress tracking...');
+
+        const categories = ['thumbnails', 'logos', 'product-banners', 'product-boxes'];
+        let totalCached = 0;
+        let totalDownloaded = 0;
+        let totalFailed = 0;
+
+        for (const category of categories) {
+            const categoryInfo = portfolioCategories[category];
+            const categoryFiles = await getCategoryFilenames(category);
+            const fullPaths = categoryFiles.map(filename => `${categoryInfo.folder}${filename}`);
+            
+            console.log(`📂 Processing ${category}: ${fullPaths.length} images`);
+            
+            const results = await cacheManager.preloadCategoryImages(category, fullPaths);
+            totalCached += results.cached;
+            totalDownloaded += results.downloaded;
+            totalFailed += results.failed;
+        }
+
+        console.log(`✅ Cache-aware preload complete: ${totalCached} cached, ${totalDownloaded} downloaded, ${totalFailed} failed`);
+        
+        // Update progress to 100%
+        window.preloadProgress = window.preloadProgress || {};
+        window.preloadProgress.loaded = totalCached + totalDownloaded;
+        window.preloadProgress.total = totalCached + totalDownloaded + totalFailed;
+        window.preloadProgress.updateUI = function() {
+            this.percentage = 100;
+            this.updateLoadingTexts();
+        };
+        window.preloadProgress.updateLoadingTexts = function() {
+            const loadingElements = document.querySelectorAll('.count-text');
+            loadingElements.forEach(element => {
+                if (element.textContent.includes('Loading') || element.textContent.includes('...')) {
+                    element.textContent = 'Ready!';
+                }
+            });
+        };
+        window.preloadProgress.updateUI();
+
+        return totalCached + totalDownloaded;
+    }
+
+    function addCacheStatusIndicator() {
+        const portfolioSection = document.querySelector('#portfolio .container');
+        if (!portfolioSection) return;
+
+        const cacheStatus = document.createElement('div');
+        cacheStatus.id = 'cache-status-indicator';
+        cacheStatus.style.cssText = `
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: linear-gradient(135deg, #10b981, #34d399);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 14px;
+            z-index: 1000;
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        `;
+        
+        cacheStatus.innerHTML = `
+            <span>💾</span>
+            <span id="cache-status-text">Images cached for instant loading</span>
+            <button id="clear-cache-btn" style="
+                background: rgba(255,255,255,0.2);
+                border: none;
+                color: white;
+                border-radius: 50%;
+                width: 24px;
+                height: 24px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                font-size: 12px;
+                margin-left: 8px;
+            " title="Clear cache">🗑️</button>
+        `;
+
+        document.body.appendChild(cacheStatus);
+
+        // Update cache status text
+        const updateCacheStatus = async () => {
+            if (cacheInitialized) {
+                await cacheManager.updateCacheStatus();
+                const statusText = document.getElementById('cache-status-text');
+                if (statusText) {
+                    statusText.textContent = `${cacheManager.cacheStatus.cachedImages} images cached`;
+                }
+            }
+        };
+
+        updateCacheStatus();
+
+        // Clear cache button
+        const clearCacheBtn = document.getElementById('clear-cache-btn');
+        if (clearCacheBtn) {
+            clearCacheBtn.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                if (confirm('Clear all cached images? This will require re-downloading them.')) {
+                    await cacheManager.clearCache();
+                    cacheStatus.style.background = 'linear-gradient(135deg, #ef4444, #f87171)';
+                    const statusText = document.getElementById('cache-status-text');
+                    if (statusText) {
+                        statusText.textContent = 'Cache cleared';
+                    }
+                    setTimeout(() => {
+                        cacheStatus.remove();
+                    }, 2000);
+                }
+            });
+        }
+
+        // Hide after 5 seconds, show on hover
+        let hideTimeout = setTimeout(() => {
+            cacheStatus.style.opacity = '0.7';
+            cacheStatus.style.transform = 'scale(0.95)';
+        }, 5000);
+
+        cacheStatus.addEventListener('mouseenter', () => {
+            clearTimeout(hideTimeout);
+            cacheStatus.style.opacity = '1';
+            cacheStatus.style.transform = 'scale(1)';
+        });
+
+        cacheStatus.addEventListener('mouseleave', () => {
+            hideTimeout = setTimeout(() => {
+                cacheStatus.style.opacity = '0.7';
+                cacheStatus.style.transform = 'scale(0.95)';
+            }, 2000);
+        });
+
+        // Update status periodically
+        setInterval(updateCacheStatus, 60000);
     }
 
     const portfolioCategories = {
@@ -593,13 +1141,74 @@ document.addEventListener('DOMContentLoaded', function() {
                 `;
 
                 const imgEl = galleryItem.querySelector('img');
-                preloadImage(image.path).then(() => {
-                    imgEl.src = image.path;
-                    imgEl.style.opacity = '1';
-                    galleryItem.style.opacity = '1';
-                }).catch(() => {
-                    galleryItem.remove();
-                });
+                
+                // Add loading indicator
+                const loadingIndicator = document.createElement('div');
+                loadingIndicator.className = 'image-loading-indicator';
+                loadingIndicator.innerHTML = '<div class="loading-spinner"></div>';
+                loadingIndicator.style.cssText = `
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    z-index: 2;
+                `;
+                galleryItem.appendChild(loadingIndicator);
+
+                // Try to load from cache first for instant display
+                if (cacheInitialized) {
+                    cacheManager.getCachedImageUrl(image.path).then(cachedUrl => {
+                        if (cachedUrl) {
+                            // Instant load from cache
+                            imgEl.src = cachedUrl;
+                            imgEl.style.opacity = '1';
+                            galleryItem.style.opacity = '1';
+                            loadingIndicator.remove();
+                            
+                            // Add cached indicator
+                            const cachedIndicator = document.createElement('div');
+                            cachedIndicator.className = 'cached-indicator';
+                            cachedIndicator.innerHTML = '💾';
+                            cachedIndicator.style.cssText = `
+                                position: absolute;
+                                top: 8px;
+                                right: 8px;
+                                background: rgba(16, 185, 129, 0.9);
+                                color: white;
+                                border-radius: 50%;
+                                width: 24px;
+                                height: 24px;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                font-size: 12px;
+                                z-index: 3;
+                            `;
+                            galleryItem.appendChild(cachedIndicator);
+                            return;
+                        }
+                        
+                        // Fallback to network loading
+                        preloadImage(image.path).then(() => {
+                            imgEl.src = image.path;
+                            imgEl.style.opacity = '1';
+                            galleryItem.style.opacity = '1';
+                            loadingIndicator.remove();
+                        }).catch(() => {
+                            galleryItem.remove();
+                        });
+                    });
+                } else {
+                    // Fallback to network loading
+                    preloadImage(image.path).then(() => {
+                        imgEl.src = image.path;
+                        imgEl.style.opacity = '1';
+                        galleryItem.style.opacity = '1';
+                        loadingIndicator.remove();
+                    }).catch(() => {
+                        galleryItem.remove();
+                    });
+                }
 
                 galleryItem.addEventListener('click', () => {
                     openLightbox(images, index);
@@ -701,13 +1310,74 @@ document.addEventListener('DOMContentLoaded', function() {
                     `;
 
                     const imgEl = galleryItem.querySelector('img');
-                    preloadImage(image.path).then(() => {
-                        imgEl.src = image.path;
-                        imgEl.style.opacity = '1';
-                        galleryItem.style.opacity = '1';
-                    }).catch(() => {
-                        galleryItem.remove();
-                    });
+                    
+                    // Add loading indicator
+                    const loadingIndicator = document.createElement('div');
+                    loadingIndicator.className = 'image-loading-indicator';
+                    loadingIndicator.innerHTML = '<div class="loading-spinner"></div>';
+                    loadingIndicator.style.cssText = `
+                        position: absolute;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
+                        z-index: 2;
+                    `;
+                    galleryItem.appendChild(loadingIndicator);
+
+                    // Try to load from cache first for instant display
+                    if (cacheInitialized) {
+                        cacheManager.getCachedImageUrl(image.path).then(cachedUrl => {
+                            if (cachedUrl) {
+                                // Instant load from cache
+                                imgEl.src = cachedUrl;
+                                imgEl.style.opacity = '1';
+                                galleryItem.style.opacity = '1';
+                                loadingIndicator.remove();
+                                
+                                // Add cached indicator
+                                const cachedIndicator = document.createElement('div');
+                                cachedIndicator.className = 'cached-indicator';
+                                cachedIndicator.innerHTML = '💾';
+                                cachedIndicator.style.cssText = `
+                                    position: absolute;
+                                    top: 8px;
+                                    right: 8px;
+                                    background: rgba(16, 185, 129, 0.9);
+                                    color: white;
+                                    border-radius: 50%;
+                                    width: 24px;
+                                    height: 24px;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    font-size: 12px;
+                                    z-index: 3;
+                                `;
+                                galleryItem.appendChild(cachedIndicator);
+                                return;
+                            }
+                            
+                            // Fallback to network loading
+                            preloadImage(image.path).then(() => {
+                                imgEl.src = image.path;
+                                imgEl.style.opacity = '1';
+                                galleryItem.style.opacity = '1';
+                                loadingIndicator.remove();
+                            }).catch(() => {
+                                galleryItem.remove();
+                            });
+                        });
+                    } else {
+                        // Fallback to network loading
+                        preloadImage(image.path).then(() => {
+                            imgEl.src = image.path;
+                            imgEl.style.opacity = '1';
+                            galleryItem.style.opacity = '1';
+                            loadingIndicator.remove();
+                        }).catch(() => {
+                            galleryItem.remove();
+                        });
+                    }
 
                     galleryItem.addEventListener('click', () => {
                         openLightbox(images, index);
@@ -832,25 +1502,62 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
 
+    // Initialize cache system first
+    async function initializeCacheSystem() {
+        try {
+            await cacheManager.init();
+            cacheInitialized = true;
+            console.log('✅ Cache system initialized');
+            
+            // Initial cache sync
+            const syncResult = await cacheManager.syncWithManifest();
+            if (syncResult.updated) {
+                console.log(`🔄 Cache updated: +${syncResult.new} new, -${syncResult.removed} removed`);
+            }
+            
+            return true;
+        } catch (error) {
+            console.warn('❌ Cache initialization failed, using fallback:', error);
+            cacheInitialized = false;
+            return false;
+        }
+    }
+
     preloadEssentialImages().then(async () => {
-        console.log('🚀 Starting ULTRA-LIGHTNING portfolio loading...');
+        console.log('🚀 Starting ULTRA-LIGHTNING portfolio loading with cache...');
+
+        // Initialize cache system
+        await initializeCacheSystem();
 
         console.log('📂 Loading categories sequentially...');
-
         await loadPortfolioImages();
         console.log('✅ Portfolio data loaded');
 
-        await preloadAllPortfolioImages();
+        // Use cache-aware preloading
+        if (cacheInitialized) {
+            console.log('💾 Using cache-aware preloading...');
+            await preloadAllPortfolioImagesWithCache();
+        } else {
+            console.log('🌐 Using fallback preloading...');
+            await preloadAllPortfolioImages();
+        }
         console.log('✅ All images preloaded');
         
         console.log('⚡⚡⚡ ULTRA-LIGHTNING portfolio ready! All images available instantly!');
+        
+        // Add cache status indicator
+        if (cacheInitialized) {
+            addCacheStatusIndicator();
+        }
 
-        // Periodically poll manifest for changes and update counts
-        async function refreshCountsFromManifest() {
+        // Enhanced manifest polling with cache sync
+        async function refreshCountsAndSyncCache() {
             try {
                 // Force re-fetch of manifest
                 window.__imagesManifest = undefined;
                 const categories = Object.keys(portfolioCategories);
+                
+                // Update counts
                 await Promise.all(categories.map(async (category) => {
                     const info = portfolioCategories[category];
                     const files = await listImagesInFolder(info.folder, info.extensions);
@@ -860,12 +1567,21 @@ document.addEventListener('DOMContentLoaded', function() {
                     // If modal for this category is open and we have no data loaded yet, keep it fresh next time user opens
                     portfolioData[category] = portfolioData[category] || valid.map(p => ({ path: p, name: p.split('/').pop().replace(/\.(png|jpg|jpeg|gif|webp)$/i, ''), category }));
                 }));
+                
+                // Sync cache if available
+                if (cacheInitialized) {
+                    const syncResult = await cacheManager.syncWithManifest();
+                    if (syncResult.updated) {
+                        console.log(`🔄 Auto-sync: +${syncResult.new} new, -${syncResult.removed} removed`);
+                    }
+                }
             } catch (e) {
                 console.warn('Refresh counts failed:', e);
             }
         }
 
-        setInterval(refreshCountsFromManifest, 60000);
+        // Check for updates every 30 seconds (more frequent for better UX)
+        setInterval(refreshCountsAndSyncCache, 30000);
     });
 
 
