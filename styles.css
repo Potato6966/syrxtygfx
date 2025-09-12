@@ -523,7 +523,6 @@ body::before {
     }
 }
 
-/* Mouse tracking light animation */
 .mouse-light {
     position: fixed;
     width: 300px;
@@ -1015,7 +1014,6 @@ body::before {
     display: inline-block;
 }
 
-/* Smooth, accessible focus styles without harsh outlines */
 button,
 .btn,
 .cart-button,
