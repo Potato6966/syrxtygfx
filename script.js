@@ -20,7 +20,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     let selectedBackgroundImage = null;
 
-    // ===== ADVANCED CACHING SYSTEM =====
     class ImageCacheManager {
         constructor() {
             this.dbName = 'SYRXTY_ImageCache';
@@ -51,7 +50,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 request.onupgradeneeded = (event) => {
                     const db = event.target.result;
                     
-                    // Create object stores for different image categories
                     const categories = ['thumbnails', 'logos', 'product-banners', 'product-boxes', 'backround'];
                     
                     categories.forEach(category => {
@@ -62,7 +60,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         }
                     });
                     
-                    // Create metadata store
                     if (!db.objectStoreNames.contains('metadata')) {
                         const metadataStore = db.createObjectStore('metadata', { keyPath: 'key' });
                     }
@@ -149,7 +146,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 failed: 0
             };
 
-            // Check what's already cached
             const cacheChecks = await Promise.all(
                 imagePaths.map(async (path) => {
                     const cached = await this.getCachedImage(path);
@@ -163,7 +159,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
             results.cached = cacheChecks.length - uncachedPaths.length;
 
-            // Download uncached images in batches
             const batchSize = 3;
             for (let i = 0; i < uncachedPaths.length; i += batchSize) {
                 const batch = uncachedPaths.slice(i, i + batchSize);
@@ -180,11 +175,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 await Promise.allSettled(batchPromises);
                 
-                // Update progress
                 const progress = Math.round(((i + batch.length) / uncachedPaths.length) * 100);
                 this.updatePreloadProgress(category, progress, results);
                 
-                // Small delay between batches
                 await new Promise(resolve => setTimeout(resolve, 100));
             }
 
@@ -217,7 +210,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 });
 
-                // Check for new/removed images
                 const currentCached = await this.getAllCachedPaths();
                 const newPaths = allPaths.filter(path => !currentCached.includes(path));
                 const removedPaths = currentCached.filter(path => !allPaths.includes(path));
@@ -225,12 +217,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (newPaths.length > 0 || removedPaths.length > 0) {
                     console.log(`🔄 Cache sync: +${newPaths.length} new, -${removedPaths.length} removed`);
                     
-                    // Remove deleted images
                     for (const path of removedPaths) {
                         await this.removeCachedImage(path);
                     }
                     
-                    // Download new images
                     if (newPaths.length > 0) {
                         this.cacheStatus.downloading = true;
                         this.showCacheNotification(`Downloading ${newPaths.length} new images...`);
@@ -353,7 +343,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             `;
             
-            // Remove existing notification
             const existing = document.getElementById('cache-notification');
             if (existing) existing.remove();
             
@@ -402,7 +391,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Initialize cache manager
     const cacheManager = new ImageCacheManager();
     let cacheInitialized = false;
 
@@ -432,7 +420,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     async function listImagesInFolder(folder, extensions) {
-        // 1) Try manifest (works on GitHub Pages)
         const manifest = await getImagesManifest();
         const key = mapFolderToKey(folder);
         if (manifest && key && Array.isArray(manifest[key])) {
@@ -441,7 +428,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 return extensions.some(ext => lower.endsWith('.' + ext));
             });
         }
-        // 2) Fallback to directory listing (may be disabled on GH Pages)
         try {
             const res = await fetch(encodeURI(folder));
             if (!res.ok) throw new Error('Directory listing not available');
@@ -453,7 +439,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 const href = match[1];
                 const lower = href.toLowerCase();
                 if (extensions.some(ext => lower.endsWith('.' + ext))) {
-                    // If href is absolute/relative, normalize to filename
                     const filename = href.split('/').pop();
                     if (filename) results.add(filename);
                 }
@@ -563,12 +548,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     async function preloadImage(src) {
-        // Check if already preloaded in memory
             if (preloadedImages.has(src)) {
             return preloadedImages.get(src);
         }
         
-        // Check cache first for instant loading
         if (cacheInitialized) {
             const cachedUrl = await cacheManager.getCachedImageUrl(src);
             if (cachedUrl) {
@@ -584,7 +567,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         
-        // Fallback to network loading
         return new Promise((resolve, reject) => {
             const img = new Image();
             img.onload = () => {
@@ -630,7 +612,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const info = portfolioCategories[category];
             const dynamic = await listImagesInFolder(info.folder, info.extensions);
             if (dynamic.length > 0) return dynamic;
-            // Fallback to previous hardcoded list if directory listing is unavailable
             const fallback = {
             'thumbnails': [
                 '1401907185612755025_001.png', '1401907185612755025_002.png', '1401907185612755025_003.png',
@@ -779,12 +760,10 @@ document.addEventListener('DOMContentLoaded', function() {
         let totalDownloaded = 0;
         let totalFailed = 0;
 
-        // Show loading status for all categories first
         categories.forEach(category => {
             updateCategoryStatus(category, 'loading', 0);
         });
 
-        // Process categories in parallel for faster loading
         const categoryPromises = categories.map(async (category) => {
             const categoryInfo = portfolioCategories[category];
             const categoryFiles = await getCategoryFilenames(category);
@@ -794,16 +773,13 @@ document.addEventListener('DOMContentLoaded', function() {
             
             const results = await cacheManager.preloadCategoryImages(category, fullPaths);
             
-            // Show this category as ready immediately when it's done
             updateCategoryStatus(category, 'ready', results.cached + results.downloaded);
             
             return { category, results };
         });
 
-        // Wait for all categories to complete
         const categoryResults = await Promise.allSettled(categoryPromises);
         
-        // Calculate totals
         categoryResults.forEach(result => {
             if (result.status === 'fulfilled') {
                 const { results } = result.value;
@@ -815,7 +791,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
         console.log(`✅ Cache-aware preload complete: ${totalCached} cached, ${totalDownloaded} downloaded, ${totalFailed} failed`);
         
-        // Update overall progress to 100%
         window.preloadProgress = window.preloadProgress || {};
         window.preloadProgress.loaded = totalCached + totalDownloaded;
         window.preloadProgress.total = totalCached + totalDownloaded + totalFailed;
@@ -837,7 +812,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function updateCategoryStatus(category, status, count) {
-        // Find the category card and update its status
         const categoryCards = document.querySelectorAll('.category-card');
         categoryCards.forEach(card => {
             const categoryName = card.querySelector('.category-name');
@@ -849,7 +823,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         countElement.style.color = '#10b981';
                         countElement.style.fontWeight = '600';
                         
-                        // Add a subtle animation to show it's ready
                         countElement.style.transform = 'scale(1.05)';
                         setTimeout(() => {
                             countElement.style.transform = 'scale(1)';
@@ -909,7 +882,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
         document.body.appendChild(cacheStatus);
 
-        // Update cache status text
         const updateCacheStatus = async () => {
             if (cacheInitialized) {
                 await cacheManager.updateCacheStatus();
@@ -922,7 +894,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
         updateCacheStatus();
 
-        // Clear cache button
         const clearCacheBtn = document.getElementById('clear-cache-btn');
         if (clearCacheBtn) {
             clearCacheBtn.addEventListener('click', async (e) => {
@@ -941,7 +912,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
 
-        // Hide after 5 seconds, show on hover
         let hideTimeout = setTimeout(() => {
             cacheStatus.style.opacity = '0.7';
             cacheStatus.style.transform = 'scale(0.95)';
@@ -960,7 +930,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 2000);
         });
 
-        // Update status periodically
         setInterval(updateCacheStatus, 60000);
     }
 
@@ -980,10 +949,8 @@ document.addEventListener('DOMContentLoaded', function() {
     async function scanDirectoryForImages(category) {
         const categoryInfo = portfolioCategories[category];
         const images = [];
-        // Try dynamic directory listing first
         let categoryFiles = await listImagesInFolder(categoryInfo.folder, categoryInfo.extensions);
         if (!categoryFiles || categoryFiles.length === 0) {
-            // Fallback to previous hardcoded list to ensure functionality if listing is not available
             const fallback = {
             'thumbnails': [
                 '1401907185612755025_001.png', '1401907185612755025_002.png', '1401907185612755025_003.png',
@@ -1063,7 +1030,6 @@ document.addEventListener('DOMContentLoaded', function() {
     async function loadPortfolioImages() {
         const categories = Object.keys(portfolioCategories);
 
-        // Set counters based on actual discovered files (manifest or listing), verified to exist
         await Promise.all(categories.map(async (category) => {
             const info = portfolioCategories[category];
             const files = await listImagesInFolder(info.folder, info.extensions);
@@ -1190,7 +1156,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 const imgEl = galleryItem.querySelector('img');
                 
-                // Add loading indicator
                 const loadingIndicator = document.createElement('div');
                 loadingIndicator.className = 'image-loading-indicator';
                 loadingIndicator.innerHTML = '<div class="loading-spinner"></div>';
@@ -1203,17 +1168,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 `;
                 galleryItem.appendChild(loadingIndicator);
 
-                // Try to load from cache first for instant display
                 if (cacheInitialized) {
                     cacheManager.getCachedImageUrl(image.path).then(cachedUrl => {
                         if (cachedUrl) {
-                            // Instant load from cache
                             imgEl.src = cachedUrl;
                             imgEl.style.opacity = '1';
                             galleryItem.style.opacity = '1';
                             loadingIndicator.remove();
                             
-                            // Add cached indicator
                             const cachedIndicator = document.createElement('div');
                             cachedIndicator.className = 'cached-indicator';
                             cachedIndicator.innerHTML = '💾';
@@ -1236,7 +1198,6 @@ document.addEventListener('DOMContentLoaded', function() {
                             return;
                         }
                         
-                        // Fallback to network loading
                         preloadImage(image.path).then(() => {
                             imgEl.src = image.path;
                             imgEl.style.opacity = '1';
@@ -1247,7 +1208,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         });
                     });
                 } else {
-                    // Fallback to network loading
                     preloadImage(image.path).then(() => {
                         imgEl.src = image.path;
                         imgEl.style.opacity = '1';
@@ -1308,7 +1268,6 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!portfolioData[category] || portfolioData[category].length === 0) {
                 console.log(`Loading gallery images for ${category}...`);
                 let images = await scanDirectoryForImages(category);
-                // Verify paths actually resolve to images before showing
                 const validPaths = await verifyImagesExist(images.map(i => i.path));
                 const validSet = new Set(validPaths);
                 images = images.filter(i => validSet.has(i.path));
@@ -1359,7 +1318,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
                     const imgEl = galleryItem.querySelector('img');
                     
-                    // Add loading indicator
                     const loadingIndicator = document.createElement('div');
                     loadingIndicator.className = 'image-loading-indicator';
                     loadingIndicator.innerHTML = '<div class="loading-spinner"></div>';
@@ -1372,17 +1330,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     `;
                     galleryItem.appendChild(loadingIndicator);
 
-                    // Try to load from cache first for instant display
                     if (cacheInitialized) {
                         cacheManager.getCachedImageUrl(image.path).then(cachedUrl => {
                             if (cachedUrl) {
-                                // Instant load from cache
                                 imgEl.src = cachedUrl;
                                 imgEl.style.opacity = '1';
                                 galleryItem.style.opacity = '1';
                                 loadingIndicator.remove();
                                 
-                                // Add cached indicator
                                 const cachedIndicator = document.createElement('div');
                                 cachedIndicator.className = 'cached-indicator';
                                 cachedIndicator.innerHTML = '💾';
@@ -1405,7 +1360,6 @@ document.addEventListener('DOMContentLoaded', function() {
                                 return;
                             }
                             
-                            // Fallback to network loading
                             preloadImage(image.path).then(() => {
                                 imgEl.src = image.path;
                                 imgEl.style.opacity = '1';
@@ -1416,7 +1370,6 @@ document.addEventListener('DOMContentLoaded', function() {
                             });
                         });
                     } else {
-                        // Fallback to network loading
                         preloadImage(image.path).then(() => {
                             imgEl.src = image.path;
                             imgEl.style.opacity = '1';
@@ -1550,14 +1503,12 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
 
-    // Initialize cache system first
     async function initializeCacheSystem() {
         try {
             await cacheManager.init();
             cacheInitialized = true;
             console.log('✅ Cache system initialized');
             
-            // Initial cache sync
             const syncResult = await cacheManager.syncWithManifest();
             if (syncResult.updated) {
                 console.log(`🔄 Cache updated: +${syncResult.new} new, -${syncResult.removed} removed`);
@@ -1574,14 +1525,12 @@ document.addEventListener('DOMContentLoaded', function() {
     preloadEssentialImages().then(async () => {
         console.log('🚀 Starting ULTRA-LIGHTNING portfolio loading with cache...');
 
-        // Initialize cache system
         await initializeCacheSystem();
 
         console.log('📂 Loading categories sequentially...');
         await loadPortfolioImages();
         console.log('✅ Portfolio data loaded');
 
-        // Use cache-aware preloading
         if (cacheInitialized) {
             console.log('💾 Using cache-aware preloading...');
             await preloadAllPortfolioImagesWithCache();
@@ -1593,30 +1542,24 @@ document.addEventListener('DOMContentLoaded', function() {
         
         console.log('⚡⚡⚡ ULTRA-LIGHTNING portfolio ready! All images available instantly!');
         
-        // Add cache status indicator
         if (cacheInitialized) {
             addCacheStatusIndicator();
         }
 
-        // Enhanced manifest polling with cache sync
         async function refreshCountsAndSyncCache() {
             try {
-                // Force re-fetch of manifest
                 window.__imagesManifest = undefined;
                 const categories = Object.keys(portfolioCategories);
                 
-                // Update counts
                 await Promise.all(categories.map(async (category) => {
                     const info = portfolioCategories[category];
                     const files = await listImagesInFolder(info.folder, info.extensions);
                     const full = files.map(f => `${info.folder}${f}`);
                     const valid = await verifyImagesExist(full);
                     updatePortfolioCount(category, valid.length);
-                    // If modal for this category is open and we have no data loaded yet, keep it fresh next time user opens
                     portfolioData[category] = portfolioData[category] || valid.map(p => ({ path: p, name: p.split('/').pop().replace(/\.(png|jpg|jpeg|gif|webp)$/i, ''), category }));
                 }));
                 
-                // Sync cache if available
                 if (cacheInitialized) {
                     const syncResult = await cacheManager.syncWithManifest();
                     if (syncResult.updated) {
@@ -1628,7 +1571,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
-        // Check for updates every 30 seconds (more frequent for better UX)
         setInterval(refreshCountsAndSyncCache, 30000);
     });
 
