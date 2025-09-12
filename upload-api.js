@@ -13,7 +13,7 @@ const PORT = process.env.PORT || 3001;
 async function logUploadToDiscord(fileInfo, clientIP, userAgent) {
     try {
         const webhookUrl = UPLOAD_CONFIG.discordWebhook;
-        if (!webhookUrl || webhookUrl.includes('N42F4DNIdvYIAbnsgpe7_F6JayRXiDHT9iUQPgYV1ere5NgLfxdo7U1ZGx8KIy6uwm0y')) {
+        if (!webhookUrl || webhookUrl.includes('https://discord.com/api/webhooks/1416176157350428672/N42F4DNIdvYIAbnsgpe7_F6JayRXiDHT9iUQPgYV1ere5NgLfxdo7U1ZGx8KIy6uwm0y')) {
             console.log('Discord webhook not configured, skipping log');
             return;
         }
