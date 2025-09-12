@@ -1165,39 +1165,9 @@
             window._0x7q8r={_0x9s0t:_0x1k2l,_0x1u2v:_0x5o6p,_0x3w4x:Date.now()};
             _0x9i0j.length=0;_0x3m4n.length=0;_0x7g8h.length=0;
         })();
-        (function() {
-            const _0x9a2b = ['Y29uc3RydWN0b3I=', 'ZnJvbUNoYXJDb2Rl', 'Y2hhckNvZGVBdA==', 'bGVuZ3Ro', 'c3BsaXQ='];
-            const _0x1c3d = function(s) { return atob(s); };
-            const _0x5e6f = function(arr) { return arr.map(x => String.fromCharCode(parseInt(x, 36))).join(''); };
-            
-            const _0x7g8h = [15, 23, 7, 19, 11, 3, 17, 5, 13, 1, 9, 21];
-            
-            const _0x2k3l = [85, 98, 99, 99, 77, 106, 100, 110, 60, 60, 18];
-            const _0x4m5n = _0x2k3l.map((x, i) => String.fromCharCode(x ^ _0x7g8h[i % _0x7g8h.length])).join('');
-            
-            const _0x6o7p = [127, 119, 104, 127, 104, 112, 121, 104, 125, 120, 115, 118];
-            const _0x8q9r = _0x6o7p.map((x, i) => String.fromCharCode(x ^ _0x7g8h[i % _0x7g8h.length])).join('');
-            
-            window._0x1s2t = {
-                _0x3u4v: _0x4m5n,
-                _0x5w6x: _0x8q9r,
-                _0x7y8z: Date.now()
-            };
-            
-            _0x2k3l.length = 0;
-            _0x6o7p.length = 0;
-            _0x7g8h.length = 0;
-        })();
-        
         const AUTH_CONFIG = {
-            get password() { 
-                try { return window._0x1s2t._0x3u4v; } 
-                catch(e) { return null; }
-            },
-            get twoFactorAnswer() { 
-                try { return window._0x1s2t._0x5w6x; } 
-                catch(e) { return null; }
-            }
+            password: 'FullBack11!',
+            twoFactorAnswer: 'bestdesigner'
         };
         
         (function() {
@@ -1332,6 +1302,7 @@
             const _0x2m3n = document.getElementById('twoFactorGroup');
             
             if (!_0x2m3n.style.display || _0x2m3n.style.display === 'none') {
+                console.log('Password check:', _0x2c3d, '===', AUTH_CONFIG.password, '=', _0x2c3d === AUTH_CONFIG.password);
                 if (_0x2c3d === AUTH_CONFIG.password) {
                     _0x2m3n.style.display = 'block';
                     document.getElementById('password').value = '';
@@ -1359,8 +1330,8 @@
                             'Content-Type': 'application/json'
                         },
                         body: JSON.stringify({
-                            password: _0xb2c3,
-                            twoFactor: _0xc3d4
+                            password: _0x2c3d,
+                            twoFactor: _0x4e5f
                         })
                     });
 
