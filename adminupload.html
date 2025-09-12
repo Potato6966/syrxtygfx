@@ -814,6 +814,42 @@
             box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
         }
 
+        .notification.warning {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            box-shadow: 0 10px 30px rgba(245, 158, 11, 0.3);
+        }
+
+        /* Mouse tracking light animation */
+        .mouse-light {
+            position: fixed;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, rgba(59, 130, 246, 0.05) 30%, transparent 70%);
+            pointer-events: none;
+            z-index: 1;
+            transition: transform 0.1s ease-out;
+            mix-blend-mode: screen;
+        }
+
+        .mouse-light::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.2) 0%, transparent 70%);
+            transform: translate(-50%, -50%);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.7; }
+            50% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+        }
+
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
@@ -855,6 +891,9 @@
 </head>
 <body>
     <div class="light-overlay"></div>
+    
+    <!-- Mouse tracking light -->
+    <div class="mouse-light" id="mouseLight"></div>
     
     <div style="display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px;">
         <!-- Authentication Screen -->
@@ -1075,6 +1114,35 @@
             uploadArea.addEventListener('drop', handleDrop);
             
             fileInput.addEventListener('change', handleFileSelect);
+            
+            // Mouse tracking light
+            initializeMouseTracking();
+        }
+
+        function initializeMouseTracking() {
+            const mouseLight = document.getElementById('mouseLight');
+            let mouseX = 0;
+            let mouseY = 0;
+            let lightX = 0;
+            let lightY = 0;
+
+            document.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+            });
+
+            function updateLightPosition() {
+                // Smooth following with easing
+                lightX += (mouseX - lightX) * 0.1;
+                lightY += (mouseY - lightY) * 0.1;
+                
+                mouseLight.style.left = lightX - 150 + 'px';
+                mouseLight.style.top = lightY - 150 + 'px';
+                
+                requestAnimationFrame(updateLightPosition);
+            }
+
+            updateLightPosition();
         }
 
         function checkAuthStatus() {
@@ -1101,10 +1169,19 @@
                     document.getElementById('password').value = '';
                     authBtnText.textContent = 'Answer Security Question';
                     errorDiv.style.display = 'none';
+                    showNotification('✅ Password correct! Please answer the security question.', 'success');
                 } else {
-                    showError('Invalid password. Please try again.');
+                    showError('❌ Invalid password. Please try again.');
+                    showNotification('❌ Invalid password. Please try again.', 'error');
                 }
             } else {
+                // Second step: 2FA - validate answer first
+                if (twoFactor.toLowerCase() !== AUTH_CONFIG.twoFactorAnswer.toLowerCase()) {
+                    showError('❌ Incorrect security answer. Please try again.');
+                    showNotification('❌ Incorrect security answer. Please try again.', 'error');
+                    return;
+                }
+                
                 // Second step: 2FA - authenticate with API
                 authBtn.disabled = true;
                 authBtnText.innerHTML = '<div class="spinner"></div>Authenticating...';
@@ -1125,13 +1202,19 @@
 
                     if (result.success) {
                         localStorage.setItem('syrxty_admin_token', result.token);
-                        showAdminInterface();
+                        showNotification('🎉 Authentication successful! Welcome to admin panel.', 'success');
+                        // Small delay before showing admin interface
+                        setTimeout(() => {
+                            showAdminInterface();
+                        }, 1000);
                     } else {
                         showError(result.error || 'Authentication failed. Please try again.');
+                        showNotification(`❌ ${result.error || 'Authentication failed. Please try again.'}`, 'error');
                     }
                 } catch (error) {
                     console.error('Auth error:', error);
                     showError('Connection error. Please check your internet connection.');
+                    showNotification('❌ Connection error. Please check your internet connection.', 'error');
                 } finally {
                     authBtn.disabled = false;
                     authBtnText.textContent = 'Answer Security Question';
