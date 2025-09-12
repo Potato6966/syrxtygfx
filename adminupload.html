@@ -917,6 +917,11 @@
                 <span id="authBtnText">Authenticate</span>
             </button>
             
+            <!-- Debug button -->
+            <button type="button" class="btn" onclick="testAuth()" style="margin-top: 10px; background: #f59e0b;">
+                Test Auth (Debug)
+            </button>
+            
             <div id="authError" class="error" style="display: none;"></div>
         </form>
     </div>
@@ -1101,7 +1106,27 @@
 
         function initializeEventListeners() {
             // Authentication form
-            document.getElementById('authForm').addEventListener('submit', handleAuth);
+            const authForm = document.getElementById('authForm');
+            const authBtn = document.getElementById('authBtn');
+            
+            if (authForm) {
+                authForm.addEventListener('submit', handleAuth);
+                console.log('✅ Auth form event listener added');
+            } else {
+                console.error('❌ Auth form not found');
+            }
+            
+            // Backup click handler for auth button
+            if (authBtn) {
+                authBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    console.log('🔘 Auth button clicked directly');
+                    handleAuth(e);
+                });
+                console.log('✅ Auth button event listener added');
+            } else {
+                console.error('❌ Auth button not found');
+            }
             
             // File upload
             const uploadArea = document.getElementById('uploadArea');
@@ -1154,6 +1179,7 @@
 
         async function handleAuth(e) {
             e.preventDefault();
+            console.log('🔐 Authentication form submitted');
             
             const password = document.getElementById('password').value;
             const twoFactor = document.getElementById('twoFactor').value;
@@ -1161,6 +1187,9 @@
             const authBtn = document.getElementById('authBtn');
             const authBtnText = document.getElementById('authBtnText');
             const twoFactorGroup = document.getElementById('twoFactorGroup');
+            
+            console.log('Password entered:', password ? 'Yes' : 'No');
+            console.log('2FA entered:', twoFactor ? 'Yes' : 'No');
             
             // First step: password
             if (!twoFactorGroup.style.display || twoFactorGroup.style.display === 'none') {
@@ -1226,6 +1255,15 @@
             const errorDiv = document.getElementById('authError');
             errorDiv.textContent = message;
             errorDiv.style.display = 'block';
+        }
+
+        function testAuth() {
+            console.log('🧪 Testing authentication...');
+            console.log('AUTH_CONFIG:', AUTH_CONFIG);
+            
+            // Test with correct password
+            document.getElementById('password').value = AUTH_CONFIG.password;
+            handleAuth({ preventDefault: () => {} });
         }
 
         function showAdminInterface() {
