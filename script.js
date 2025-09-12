@@ -468,60 +468,60 @@ document.addEventListener('DOMContentLoaded', function() {
         const dynamic = await listImagesInFolder('backround/', ['png', 'jpg', 'jpeg', 'gif', 'webp']);
         if (dynamic.length > 0) return dynamic;
         return [
-            '1401907185612755025_001.png',
-            '1401907185612755025_002.png',
-            '1401907185612755025_003.png',
-            '1401907185612755025_004.png',
-            '1401907185612755025_005.png',
-            '1401907185612755025_006.png',
-            '1401907185612755025_007.png',
-            '1401907185612755025_008.png',
-            '1401907185612755025_009.png',
-            '1401907185612755025_010.png',
-            '1401907185612755025_011.png',
-            '1401907185612755025_012.png',
-            '1401907185612755025_013.png',
-            '1401907185612755025_014.png',
-            '1401907185612755025_015.png',
-            '1401907185612755025_016.png',
-            '1401907185612755025_017.png',
-            '1401907185612755025_018.png',
-            '1401907185612755025_019.png',
-            '1401907185612755025_020.png',
-            '1401907185612755025_021.png',
-            '1401907185612755025_022.png',
-            '1401907185612755025_023.png',
-            '1401907222027702423_001.png',
-            '1401907222027702423_002.png',
-            '1401907222027702423_003.png',
-            '1401907222027702423_004.png',
-            '1401907222027702423_005.png',
-            '1401907222027702423_006.png',
-            '1401907222027702423_007.png',
-            '1401907222027702423_008.png',
-            '1401907222027702423_009.png',
-            '1401907222027702423_010.png',
-            '1401907222027702423_011.png',
-            '1401907222027702423_012.png',
-            '1401907222027702423_013.png',
-            '1401907222027702423_014.png',
-            '1401907222027702423_015.png',
-            '1401907222027702423_016.png',
-            '1401907222027702423_017.png',
-            '1401907222027702423_018.png',
-            '1401907222027702423_019.png',
-            '1401907222027702423_021.png',
-            '1401907222027702423_022.png',
-            '1401907222027702423_023.png',
-            '1401907222027702423_024.png',
-            '1401907222027702423_025.png',
-            '1401907543638282320_001.png',
-            '1401907543638282320_002.png',
-            '1401907543638282320_003.png',
-            '1401907543638282320_004.png',
-            '1401909711879802932_001.png',
-            '1401909711879802932_003.png'
-        ];
+        '1401907185612755025_001.png',
+        '1401907185612755025_002.png',
+        '1401907185612755025_003.png',
+        '1401907185612755025_004.png',
+        '1401907185612755025_005.png',
+        '1401907185612755025_006.png',
+        '1401907185612755025_007.png',
+        '1401907185612755025_008.png',
+        '1401907185612755025_009.png',
+        '1401907185612755025_010.png',
+        '1401907185612755025_011.png',
+        '1401907185612755025_012.png',
+        '1401907185612755025_013.png',
+        '1401907185612755025_014.png',
+        '1401907185612755025_015.png',
+        '1401907185612755025_016.png',
+        '1401907185612755025_017.png',
+        '1401907185612755025_018.png',
+        '1401907185612755025_019.png',
+        '1401907185612755025_020.png',
+        '1401907185612755025_021.png',
+        '1401907185612755025_022.png',
+        '1401907185612755025_023.png',
+        '1401907222027702423_001.png',
+        '1401907222027702423_002.png',
+        '1401907222027702423_003.png',
+        '1401907222027702423_004.png',
+        '1401907222027702423_005.png',
+        '1401907222027702423_006.png',
+        '1401907222027702423_007.png',
+        '1401907222027702423_008.png',
+        '1401907222027702423_009.png',
+        '1401907222027702423_010.png',
+        '1401907222027702423_011.png',
+        '1401907222027702423_012.png',
+        '1401907222027702423_013.png',
+        '1401907222027702423_014.png',
+        '1401907222027702423_015.png',
+        '1401907222027702423_016.png',
+        '1401907222027702423_017.png',
+        '1401907222027702423_018.png',
+        '1401907222027702423_019.png',
+        '1401907222027702423_021.png',
+        '1401907222027702423_022.png',
+        '1401907222027702423_023.png',
+        '1401907222027702423_024.png',
+        '1401907222027702423_025.png',
+        '1401907543638282320_001.png',
+        '1401907543638282320_002.png',
+        '1401907543638282320_003.png',
+        '1401907543638282320_004.png',
+        '1401909711879802932_001.png',
+        '1401909711879802932_003.png'
+    ];
     }
 
     async function preloadBackgroundImages() {
@@ -564,7 +564,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     async function preloadImage(src) {
         // Check if already preloaded in memory
-        if (preloadedImages.has(src)) {
+            if (preloadedImages.has(src)) {
             return preloadedImages.get(src);
         }
         
@@ -632,44 +632,44 @@ document.addEventListener('DOMContentLoaded', function() {
             if (dynamic.length > 0) return dynamic;
             // Fallback to previous hardcoded list if directory listing is unavailable
             const fallback = {
-                'thumbnails': [
-                    '1401907185612755025_001.png', '1401907185612755025_002.png', '1401907185612755025_003.png',
-                    '1401907185612755025_004.png', '1401907185612755025_005.png', '1401907185612755025_006.png',
-                    '1401907185612755025_007.png', '1401907185612755025_008.png', '1401907185612755025_009.png',
-                    '1401907185612755025_010.png', '1401907185612755025_011.png', '1401907185612755025_012.png',
-                    '1401907185612755025_013.png', '1401907185612755025_014.png', '1401907185612755025_015.png',
-                    '1401907185612755025_016.png', '1401907185612755025_017.png', '1401907185612755025_018.png',
-                    '1401907185612755025_019.png', '1401907185612755025_020.png', '1401907185612755025_021.png',
-                    '1401907185612755025_022.png', '1401907185612755025_023.png',
-                    '1401907222027702423_001.png', '1401907222027702423_002.png', '1401907222027702423_003.png',
-                    '1401907222027702423_004.png', '1401907222027702423_005.png', '1401907222027702423_006.png',
-                    '1401907222027702423_007.png', '1401907222027702423_008.png', '1401907222027702423_009.png',
-                    '1401907222027702423_010.png', '1401907222027702423_011.png', '1401907222027702423_012.png',
-                    '1401907222027702423_013.png', '1401907222027702423_014.png', '1401907222027702423_015.png',
-                    '1401907222027702423_016.png', '1401907222027702423_017.png', '1401907222027702423_018.png',
-                    '1401907222027702423_019.png', '1401907222027702423_021.png', '1401907222027702423_022.png',
-                    '1401907222027702423_023.png', '1401907222027702423_024.png', '1401907222027702423_025.png',
-                    '1401907543638282320_001.png', '1401907543638282320_002.png', '1401907543638282320_003.png',
+            'thumbnails': [
+                '1401907185612755025_001.png', '1401907185612755025_002.png', '1401907185612755025_003.png',
+                '1401907185612755025_004.png', '1401907185612755025_005.png', '1401907185612755025_006.png',
+                '1401907185612755025_007.png', '1401907185612755025_008.png', '1401907185612755025_009.png',
+                '1401907185612755025_010.png', '1401907185612755025_011.png', '1401907185612755025_012.png',
+                '1401907185612755025_013.png', '1401907185612755025_014.png', '1401907185612755025_015.png',
+                '1401907185612755025_016.png', '1401907185612755025_017.png', '1401907185612755025_018.png',
+                '1401907185612755025_019.png', '1401907185612755025_020.png', '1401907185612755025_021.png',
+                '1401907185612755025_022.png', '1401907185612755025_023.png',
+                '1401907222027702423_001.png', '1401907222027702423_002.png', '1401907222027702423_003.png',
+                '1401907222027702423_004.png', '1401907222027702423_005.png', '1401907222027702423_006.png',
+                '1401907222027702423_007.png', '1401907222027702423_008.png', '1401907222027702423_009.png',
+                '1401907222027702423_010.png', '1401907222027702423_011.png', '1401907222027702423_012.png',
+                '1401907222027702423_013.png', '1401907222027702423_014.png', '1401907222027702423_015.png',
+                '1401907222027702423_016.png', '1401907222027702423_017.png', '1401907222027702423_018.png',
+                '1401907222027702423_019.png', '1401907222027702423_021.png', '1401907222027702423_022.png',
+                '1401907222027702423_023.png', '1401907222027702423_024.png', '1401907222027702423_025.png',
+                '1401907543638282320_001.png', '1401907543638282320_002.png', '1401907543638282320_003.png',
                     '1401907543638282320_004.png', '1401909711879802932_001.png', '1401909711879802932_003.png'
-                ],
-                'logos': [
-                    '1401907146664181951_001.jpg', '1401907146664181951_002.png', '1401907146664181951_003.png',
-                    '1401907146664181951_004.png', '1401907146664181951_005.png', '1401907146664181951_006.png'
-                ],
-                'product-banners': [
-                    '150skin.png', '300skin.png', '50skin.png', 'image.png', 'precise_bo6_internal.png',
-                    'PRecise_fn_priv.png', 'precise_perm_spf.png', 'precise_temp_woofer.png', 'Products_Banner.png',
-                    'Velocity_Fortnite_Private.png', 'Venza_Accounts.png', 'Venza_Fortnite_Private.png',
-                    'Venza_Fortnite_Slotted.png', 'Venza_Fortnite_Ultimate.png', 'Venza_Fortnite_Unreal.png',
-                    'Venza_Spoofer.png', 'Venza_Valorant_INt.png'
-                ],
-                'product-boxes': [
-                    'grow_a_garden_fa_account.png', 'image.png', 'neat_cod_priavte.png', 'neat_fn_private.png',
-                    'neat_temp_spf.png', 'primal_cod_unlock_all.png', 'primal_fn_slotted.png', 'roblox_executors.png',
-                    'roblox_replay.png', 'rubux_account_fa.png', 'zylo_fn_external.png', 'zylo_fn_ultimate.png',
-                    'zylo_perm_spoofer.png', 'zylo_temp_spoofer.png', 'ZYRO_fn_og.png', 'ZYRO_fn_private.png',
-                    'ZYRO_fn_pro.png', 'ZYRO_fn_public.png', 'ZYRO_fn_ultimate.png'
-                ]
+            ],
+            'logos': [
+                '1401907146664181951_001.jpg', '1401907146664181951_002.png', '1401907146664181951_003.png',
+                '1401907146664181951_004.png', '1401907146664181951_005.png', '1401907146664181951_006.png'
+            ],
+            'product-banners': [
+                '150skin.png', '300skin.png', '50skin.png', 'image.png', 'precise_bo6_internal.png',
+                'PRecise_fn_priv.png', 'precise_perm_spf.png', 'precise_temp_woofer.png', 'Products_Banner.png',
+                'Velocity_Fortnite_Private.png', 'Venza_Accounts.png', 'Venza_Fortnite_Private.png',
+                'Venza_Fortnite_Slotted.png', 'Venza_Fortnite_Ultimate.png', 'Venza_Fortnite_Unreal.png',
+                'Venza_Spoofer.png', 'Venza_Valorant_INt.png'
+            ],
+            'product-boxes': [
+                'grow_a_garden_fa_account.png', 'image.png', 'neat_cod_priavte.png', 'neat_fn_private.png',
+                'neat_temp_spf.png', 'primal_cod_unlock_all.png', 'primal_fn_slotted.png', 'roblox_executors.png',
+                'roblox_replay.png', 'rubux_account_fa.png', 'zylo_fn_external.png', 'zylo_fn_ultimate.png',
+                'zylo_perm_spoofer.png', 'zylo_temp_spoofer.png', 'ZYRO_fn_og.png', 'ZYRO_fn_private.png',
+                'ZYRO_fn_pro.png', 'ZYRO_fn_public.png', 'ZYRO_fn_ultimate.png'
+            ]
             };
             return fallback[category] || [];
         };
@@ -772,14 +772,20 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     async function preloadAllPortfolioImagesWithCache() {
-        console.log('🚀 Cache-aware preloading with progress tracking...');
+        console.log('🚀 Cache-aware preloading with progressive category display...');
 
         const categories = ['thumbnails', 'logos', 'product-banners', 'product-boxes'];
         let totalCached = 0;
         let totalDownloaded = 0;
         let totalFailed = 0;
 
-        for (const category of categories) {
+        // Show loading status for all categories first
+        categories.forEach(category => {
+            updateCategoryStatus(category, 'loading', 0);
+        });
+
+        // Process categories in parallel for faster loading
+        const categoryPromises = categories.map(async (category) => {
             const categoryInfo = portfolioCategories[category];
             const categoryFiles = await getCategoryFilenames(category);
             const fullPaths = categoryFiles.map(filename => `${categoryInfo.folder}${filename}`);
@@ -787,14 +793,29 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log(`📂 Processing ${category}: ${fullPaths.length} images`);
             
             const results = await cacheManager.preloadCategoryImages(category, fullPaths);
-            totalCached += results.cached;
-            totalDownloaded += results.downloaded;
-            totalFailed += results.failed;
-        }
+            
+            // Show this category as ready immediately when it's done
+            updateCategoryStatus(category, 'ready', results.cached + results.downloaded);
+            
+            return { category, results };
+        });
+
+        // Wait for all categories to complete
+        const categoryResults = await Promise.allSettled(categoryPromises);
+        
+        // Calculate totals
+        categoryResults.forEach(result => {
+            if (result.status === 'fulfilled') {
+                const { results } = result.value;
+                totalCached += results.cached;
+                totalDownloaded += results.downloaded;
+                totalFailed += results.failed;
+            }
+        });
 
         console.log(`✅ Cache-aware preload complete: ${totalCached} cached, ${totalDownloaded} downloaded, ${totalFailed} failed`);
         
-        // Update progress to 100%
+        // Update overall progress to 100%
         window.preloadProgress = window.preloadProgress || {};
         window.preloadProgress.loaded = totalCached + totalDownloaded;
         window.preloadProgress.total = totalCached + totalDownloaded + totalFailed;
@@ -813,6 +834,33 @@ document.addEventListener('DOMContentLoaded', function() {
         window.preloadProgress.updateUI();
 
         return totalCached + totalDownloaded;
+    }
+
+    function updateCategoryStatus(category, status, count) {
+        // Find the category card and update its status
+        const categoryCards = document.querySelectorAll('.category-card');
+        categoryCards.forEach(card => {
+            const categoryName = card.querySelector('.category-name');
+            if (categoryName && categoryName.textContent.toLowerCase().includes(category.replace('-', ' '))) {
+                const countElement = card.querySelector('.count-text');
+                if (countElement) {
+                    if (status === 'ready') {
+                        countElement.textContent = `${count} designs`;
+                        countElement.style.color = '#10b981';
+                        countElement.style.fontWeight = '600';
+                        
+                        // Add a subtle animation to show it's ready
+                        countElement.style.transform = 'scale(1.05)';
+                        setTimeout(() => {
+                            countElement.style.transform = 'scale(1)';
+                        }, 200);
+                    } else if (status === 'loading') {
+                        countElement.textContent = 'Loading...';
+                        countElement.style.color = '#3b82f6';
+                    }
+                }
+            }
+        });
     }
 
     function addCacheStatusIndicator() {
@@ -937,46 +985,46 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!categoryFiles || categoryFiles.length === 0) {
             // Fallback to previous hardcoded list to ensure functionality if listing is not available
             const fallback = {
-                'thumbnails': [
-                    '1401907185612755025_001.png', '1401907185612755025_002.png', '1401907185612755025_003.png',
-                    '1401907185612755025_004.png', '1401907185612755025_005.png', '1401907185612755025_006.png',
-                    '1401907185612755025_007.png', '1401907185612755025_008.png', '1401907185612755025_009.png',
-                    '1401907185612755025_010.png', '1401907185612755025_011.png', '1401907185612755025_012.png',
-                    '1401907185612755025_013.png', '1401907185612755025_014.png', '1401907185612755025_015.png',
-                    '1401907185612755025_016.png', '1401907185612755025_017.png', '1401907185612755025_018.png',
-                    '1401907185612755025_019.png', '1401907185612755025_020.png', '1401907185612755025_021.png',
-                    '1401907185612755025_022.png', '1401907185612755025_023.png',
-                    '1401907222027702423_001.png', '1401907222027702423_002.png', '1401907222027702423_003.png',
-                    '1401907222027702423_004.png', '1401907222027702423_005.png', '1401907222027702423_006.png',
-                    '1401907222027702423_007.png', '1401907222027702423_008.png', '1401907222027702423_009.png',
-                    '1401907222027702423_010.png', '1401907222027702423_011.png', '1401907222027702423_012.png',
-                    '1401907222027702423_013.png', '1401907222027702423_014.png', '1401907222027702423_015.png',
-                    '1401907222027702423_016.png', '1401907222027702423_017.png', '1401907222027702423_018.png',
-                    '1401907222027702423_019.png', '1401907222027702423_021.png', '1401907222027702423_022.png',
-                    '1401907222027702423_023.png', '1401907222027702423_024.png', '1401907222027702423_025.png',
-                    '1401907543638282320_001.png', '1401907543638282320_002.png', '1401907543638282320_003.png',
+            'thumbnails': [
+                '1401907185612755025_001.png', '1401907185612755025_002.png', '1401907185612755025_003.png',
+                '1401907185612755025_004.png', '1401907185612755025_005.png', '1401907185612755025_006.png',
+                '1401907185612755025_007.png', '1401907185612755025_008.png', '1401907185612755025_009.png',
+                '1401907185612755025_010.png', '1401907185612755025_011.png', '1401907185612755025_012.png',
+                '1401907185612755025_013.png', '1401907185612755025_014.png', '1401907185612755025_015.png',
+                '1401907185612755025_016.png', '1401907185612755025_017.png', '1401907185612755025_018.png',
+                '1401907185612755025_019.png', '1401907185612755025_020.png', '1401907185612755025_021.png',
+                '1401907185612755025_022.png', '1401907185612755025_023.png',
+                '1401907222027702423_001.png', '1401907222027702423_002.png', '1401907222027702423_003.png',
+                '1401907222027702423_004.png', '1401907222027702423_005.png', '1401907222027702423_006.png',
+                '1401907222027702423_007.png', '1401907222027702423_008.png', '1401907222027702423_009.png',
+                '1401907222027702423_010.png', '1401907222027702423_011.png', '1401907222027702423_012.png',
+                '1401907222027702423_013.png', '1401907222027702423_014.png', '1401907222027702423_015.png',
+                '1401907222027702423_016.png', '1401907222027702423_017.png', '1401907222027702423_018.png',
+                '1401907222027702423_019.png', '1401907222027702423_021.png', '1401907222027702423_022.png',
+                '1401907222027702423_023.png', '1401907222027702423_024.png', '1401907222027702423_025.png',
+                '1401907543638282320_001.png', '1401907543638282320_002.png', '1401907543638282320_003.png',
                     '1401907543638282320_004.png', '1401909711879802932_001.png', '1401909711879802932_003.png'
-                ],
-                'logos': [
-                    '1401907146664181951_001.jpg', '1401907146664181951_002.png', '1401907146664181951_003.png',
-                    '1401907146664181951_004.png', '1401907146664181951_005.png', '1401907146664181951_006.png',
-                    'auto_test_logo_001.jpg'
-                ],
-                'product-banners': [
-                    '150skin.png', '300skin.png', '50skin.png', 'image.png', 'precise_bo6_internal.png',
-                    'PRecise_fn_priv.png', 'precise_perm_spf.png', 'precise_temp_woofer.png', 'Products_Banner.png',
-                    'Velocity_Fortnite_Private.png', 'Venza_Accounts.png', 'Venza_Fortnite_Private.png',
-                    'Venza_Fortnite_Slotted.png', 'Venza_Fortnite_Ultimate.png', 'Venza_Fortnite_Unreal.png',
-                    'Venza_Spoofer.png', 'Venza_Valorant_INt.png'
-                ],
-                'product-boxes': [
-                    'grow_a_garden_fa_account.png', 'image.png', 'neat_cod_priavte.png', 'neat_fn_private.png',
-                    'neat_temp_spf.png', 'primal_cod_unlock_all.png', 'primal_fn_slotted.png', 'roblox_executors.png',
-                    'roblox_replay.png', 'rubux_account_fa.png', 'zylo_fn_external.png', 'zylo_fn_ultimate.png',
-                    'zylo_perm_spoofer.png', 'zylo_temp_spoofer.png', 'ZYRO_fn_og.png', 'ZYRO_fn_private.png',
-                    'ZYRO_fn_pro.png', 'ZYRO_fn_public.png', 'ZYRO_fn_ultimate.png'
-                ]
-            };
+            ],
+            'logos': [
+                '1401907146664181951_001.jpg', '1401907146664181951_002.png', '1401907146664181951_003.png',
+                '1401907146664181951_004.png', '1401907146664181951_005.png', '1401907146664181951_006.png',
+                'auto_test_logo_001.jpg'
+            ],
+            'product-banners': [
+                '150skin.png', '300skin.png', '50skin.png', 'image.png', 'precise_bo6_internal.png',
+                'PRecise_fn_priv.png', 'precise_perm_spf.png', 'precise_temp_woofer.png', 'Products_Banner.png',
+                'Velocity_Fortnite_Private.png', 'Venza_Accounts.png', 'Venza_Fortnite_Private.png',
+                'Venza_Fortnite_Slotted.png', 'Venza_Fortnite_Ultimate.png', 'Venza_Fortnite_Unreal.png',
+                'Venza_Spoofer.png', 'Venza_Valorant_INt.png'
+            ],
+            'product-boxes': [
+                'grow_a_garden_fa_account.png', 'image.png', 'neat_cod_priavte.png', 'neat_fn_private.png',
+                'neat_temp_spf.png', 'primal_cod_unlock_all.png', 'primal_fn_slotted.png', 'roblox_executors.png',
+                'roblox_replay.png', 'rubux_account_fa.png', 'zylo_fn_external.png', 'zylo_fn_ultimate.png',
+                'zylo_perm_spoofer.png', 'zylo_temp_spoofer.png', 'ZYRO_fn_og.png', 'ZYRO_fn_private.png',
+                'ZYRO_fn_pro.png', 'ZYRO_fn_public.png', 'ZYRO_fn_ultimate.png'
+            ]
+        };
             categoryFiles = fallback[category] || [];
         }
         
@@ -1066,10 +1114,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
 
                     portfolioData[category] = thumbnailImages;
-                    updatePortfolioCount(category, thumbnailImages.length);
+                        updatePortfolioCount(category, thumbnailImages.length);
                 } else {
                     portfolioData[category] = images;
-                    updatePortfolioCount(category, images.length);
+                        updatePortfolioCount(category, images.length);
                 }
 
                 console.log(`✅ Loaded ${images.length} images for category: ${category}`);
@@ -1539,7 +1587,7 @@ document.addEventListener('DOMContentLoaded', function() {
             await preloadAllPortfolioImagesWithCache();
         } else {
             console.log('🌐 Using fallback preloading...');
-            await preloadAllPortfolioImages();
+        await preloadAllPortfolioImages();
         }
         console.log('✅ All images preloaded');
         
