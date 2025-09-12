@@ -209,6 +209,219 @@
             height: 20px;
         }
 
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tab-btn {
+            padding: 8px 16px;
+            border: 2px solid rgba(59, 130, 246, 0.3);
+            border-radius: 8px;
+            background: rgba(15, 20, 41, 0.4);
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .tab-btn:hover {
+            border-color: #3b82f6;
+            background: rgba(15, 20, 41, 0.6);
+        }
+
+        .tab-btn.active {
+            border-color: #3b82f6;
+            background: rgba(59, 130, 246, 0.1);
+            color: #60a5fa;
+        }
+
+        .file-manager-section {
+            padding: 20px;
+        }
+
+        .file-manager-controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .search-box {
+            position: relative;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.6);
+            width: 16px;
+            height: 16px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 12px 10px 40px;
+            border: 2px solid rgba(59, 130, 246, 0.3);
+            border-radius: 8px;
+            background: rgba(15, 20, 41, 0.4);
+            color: #ffffff;
+            font-size: 14px;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+
+        .category-filter select {
+            padding: 10px 12px;
+            border: 2px solid rgba(59, 130, 246, 0.3);
+            border-radius: 8px;
+            background: rgba(15, 20, 41, 0.4);
+            color: #ffffff;
+            font-size: 14px;
+            min-width: 150px;
+        }
+
+        .bulk-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .bulk-select-btn {
+            background: rgba(34, 197, 94, 0.1);
+            border-color: rgba(34, 197, 94, 0.3);
+            color: #4ade80;
+        }
+
+        .bulk-delete-btn {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: rgba(239, 68, 68, 0.3);
+            color: #f87171;
+        }
+
+        .bulk-delete-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .files-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .file-card {
+            background: rgba(15, 20, 41, 0.4);
+            border: 2px solid rgba(59, 130, 246, 0.3);
+            border-radius: 12px;
+            padding: 15px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .file-card:hover {
+            border-color: #3b82f6;
+            background: rgba(15, 20, 41, 0.6);
+        }
+
+        .file-card.selected {
+            border-color: #ef4444;
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .file-checkbox {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 18px;
+            height: 18px;
+            accent-color: #ef4444;
+        }
+
+        .file-preview {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .file-info {
+            text-align: center;
+        }
+
+        .file-name {
+            font-size: 12px;
+            font-weight: 500;
+            color: #ffffff;
+            margin-bottom: 4px;
+            word-break: break-all;
+        }
+
+        .file-meta {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 8px;
+        }
+
+        .file-actions {
+            display: flex;
+            gap: 5px;
+            justify-content: center;
+        }
+
+        .file-action-btn {
+            padding: 4px 8px;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 4px;
+            background: rgba(15, 20, 41, 0.4);
+            color: #ffffff;
+            font-size: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .file-action-btn:hover {
+            border-color: #3b82f6;
+            background: rgba(15, 20, 41, 0.6);
+        }
+
+        .file-action-btn.delete {
+            border-color: rgba(239, 68, 68, 0.3);
+            color: #f87171;
+        }
+
+        .file-action-btn.delete:hover {
+            border-color: #ef4444;
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .loading-files {
+            text-align: center;
+            padding: 40px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .no-files {
+            text-align: center;
+            padding: 40px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
         input[type="password"]:focus, input[type="text"]:focus {
             outline: none;
             border-color: #3b82f6;
@@ -966,9 +1179,19 @@
                     <p class="subtitle">Upload your latest designs to the portfolio</p>
                 </div>
             </div>
-            <button class="logout-btn" onclick="logout()">
-                <i data-lucide="log-out"></i> Logout
-            </button>
+            <div class="header-actions">
+                <button class="tab-btn active" onclick="switchTab('upload')" id="uploadTab">
+                    <i data-lucide="upload"></i>
+                    Upload
+                </button>
+                <button class="tab-btn" onclick="switchTab('manage')" id="manageTab">
+                    <i data-lucide="folder"></i>
+                    Manage Files
+                </button>
+                <button class="logout-btn" onclick="logout()">
+                    <i data-lucide="log-out"></i> Logout
+                </button>
+            </div>
         </div>
 
         <div class="upload-section">
@@ -1089,6 +1312,46 @@
                 </div>
             </div>
         </div>
+        </div>
+
+        <div class="file-manager-section" id="fileManagerSection" style="display: none;">
+            <h2 class="section-title">
+                <i data-lucide="folder"></i>
+                File Manager
+            </h2>
+            
+            <div class="file-manager-controls">
+                <div class="search-box">
+                    <i data-lucide="search"></i>
+                    <input type="text" id="fileSearch" placeholder="Search files..." onkeyup="filterFiles()">
+                </div>
+                <div class="category-filter">
+                    <select id="categoryFilter" onchange="filterFiles()">
+                        <option value="">All Categories</option>
+                        <option value="thumbnails">Thumbnails</option>
+                        <option value="logos">Logos</option>
+                        <option value="product-banners">Product Banners</option>
+                        <option value="product-boxes">Product Boxes</option>
+                    </select>
+                </div>
+                <div class="bulk-actions">
+                    <button class="bulk-btn bulk-select-btn" onclick="selectAllFiles()">
+                        <i data-lucide="check-square"></i>
+                        Select All
+                    </button>
+                    <button class="bulk-btn bulk-delete-btn" onclick="deleteSelectedFiles()" id="deleteSelectedBtn" disabled>
+                        <i data-lucide="trash-2"></i>
+                        Delete Selected (<span id="selectedCount">0</span>)
+                    </button>
+                </div>
+            </div>
+
+            <div class="files-grid" id="filesGrid">
+                <div class="loading-files">
+                    <div class="spinner"></div>
+                    <p>Loading files...</p>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -1291,6 +1554,19 @@
             }
         }
 
+        async function testUploadAPI() {
+            try {
+                const response = await fetch('/api/health');
+                const result = await response.json();
+                console.log('Upload API is running:', result);
+                return true;
+            } catch (error) {
+                console.error('Upload API is not running:', error);
+                showNotification('⚠️ Upload API server is not running. Please start the server.', 'error');
+                return false;
+            }
+        }
+
         const _0x9a1b = async function(e) {
             e.preventDefault();
             
@@ -1411,6 +1687,213 @@
             document.querySelector('div[style*="display: flex"]').style.cssText = 'padding: 20px;';
             lucide.createIcons();
             loadCategoryStats();
+            testUploadAPI();
+        }
+
+        function switchTab(tab) {
+            const uploadSection = document.getElementById('uploadSection');
+            const fileManagerSection = document.getElementById('fileManagerSection');
+            const uploadTab = document.getElementById('uploadTab');
+            const manageTab = document.getElementById('manageTab');
+
+            if (tab === 'upload') {
+                uploadSection.style.display = 'block';
+                fileManagerSection.style.display = 'none';
+                uploadTab.classList.add('active');
+                manageTab.classList.remove('active');
+            } else if (tab === 'manage') {
+                uploadSection.style.display = 'none';
+                fileManagerSection.style.display = 'block';
+                uploadTab.classList.remove('active');
+                manageTab.classList.add('active');
+                loadAllFiles();
+            }
+        }
+
+        let allFiles = [];
+
+        async function loadAllFiles() {
+            const filesGrid = document.getElementById('filesGrid');
+            filesGrid.innerHTML = '<div class="loading-files"><div class="spinner"></div><p>Loading files...</p></div>';
+
+            try {
+                const response = await fetch('/api/files');
+                const result = await response.json();
+
+                if (result.success) {
+                    allFiles = result.files;
+                    displayFiles(allFiles);
+                } else {
+                    throw new Error(result.error || 'Failed to load files');
+                }
+            } catch (error) {
+                console.error('Error loading files:', error);
+                filesGrid.innerHTML = '<div class="no-files"><p>Failed to load files. Please try again.</p></div>';
+            }
+        }
+
+        function displayFiles(files) {
+            const filesGrid = document.getElementById('filesGrid');
+            
+            if (files.length === 0) {
+                filesGrid.innerHTML = '<div class="no-files"><p>No files found.</p></div>';
+                return;
+            }
+
+            filesGrid.innerHTML = files.map(file => `
+                <div class="file-card" onclick="toggleFileSelection('${file.id}')">
+                    <input type="checkbox" class="file-checkbox" id="file-${file.id}" onchange="updateSelectedFiles()">
+                    <img src="https://syrxtyfv.xyz/${file.category}/${file.filename}" alt="${file.filename}" class="file-preview" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjEyMCIgdmlld0JveD0iMCAwIDIwMCAxMjAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMTIwIiBmaWxsPSIjMzMzIi8+Cjx0ZXh0IHg9IjEwMCIgeT0iNjAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+SW1hZ2UgTm90IEZvdW5kPC90ZXh0Pgo8L3N2Zz4='">
+                    <div class="file-info">
+                        <div class="file-name">${file.filename}</div>
+                        <div class="file-meta">${CATEGORIES[file.category]?.name || file.category} • ${formatBytes(file.size)}</div>
+                        <div class="file-actions">
+                            <button class="file-action-btn" onclick="event.stopPropagation(); viewFile('${file.id}')">View</button>
+                            <button class="file-action-btn delete" onclick="event.stopPropagation(); deleteFile('${file.id}')">Delete</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            lucide.createIcons();
+        }
+
+        function toggleFileSelection(fileId) {
+            const checkbox = document.getElementById(`file-${fileId}`);
+            checkbox.checked = !checkbox.checked;
+            updateSelectedFiles();
+        }
+
+        function updateSelectedFiles() {
+            const checkboxes = document.querySelectorAll('.file-checkbox:checked');
+            selectedFiles = Array.from(checkboxes).map(cb => cb.id.replace('file-', ''));
+            
+            const deleteBtn = document.getElementById('deleteSelectedBtn');
+            const selectedCount = document.getElementById('selectedCount');
+            
+            selectedCount.textContent = selectedFiles.length;
+            deleteBtn.disabled = selectedFiles.length === 0;
+
+            // Update card styles
+            document.querySelectorAll('.file-card').forEach(card => {
+                const checkbox = card.querySelector('.file-checkbox');
+                if (checkbox.checked) {
+                    card.classList.add('selected');
+                } else {
+                    card.classList.remove('selected');
+                }
+            });
+        }
+
+        function selectAllFiles() {
+            const checkboxes = document.querySelectorAll('.file-checkbox');
+            const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+            
+            checkboxes.forEach(cb => {
+                cb.checked = !allChecked;
+            });
+            
+            updateSelectedFiles();
+        }
+
+        function filterFiles() {
+            const searchTerm = document.getElementById('fileSearch').value.toLowerCase();
+            const categoryFilter = document.getElementById('categoryFilter').value;
+            
+            let filteredFiles = allFiles;
+            
+            if (searchTerm) {
+                filteredFiles = filteredFiles.filter(file => 
+                    file.filename.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            if (categoryFilter) {
+                filteredFiles = filteredFiles.filter(file => 
+                    file.category === categoryFilter
+                );
+            }
+            
+            displayFiles(filteredFiles);
+        }
+
+        async function deleteFile(fileId) {
+            const file = allFiles.find(f => f.id === fileId);
+            if (!file) return;
+
+            if (!confirm(`Are you sure you want to delete "${file.filename}"?`)) {
+                return;
+            }
+
+            try {
+                const authToken = localStorage.getItem('syrxty_admin_token');
+                const response = await fetch(`/api/file/${file.category}/${file.filename}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showNotification(`Successfully deleted ${file.filename}`, 'success');
+                    loadAllFiles();
+                    loadCategoryStats();
+                } else {
+                    throw new Error(result.error || 'Delete failed');
+                }
+            } catch (error) {
+                console.error('Delete error:', error);
+                showNotification(`Failed to delete ${file.filename}: ${error.message}`, 'error');
+            }
+        }
+
+        async function deleteSelectedFiles() {
+            if (selectedFiles.length === 0) return;
+
+            if (!confirm(`Are you sure you want to delete ${selectedFiles.length} file(s)?`)) {
+                return;
+            }
+
+            const deleteBtn = document.getElementById('deleteSelectedBtn');
+            deleteBtn.disabled = true;
+            deleteBtn.innerHTML = '<div class="spinner"></div>Deleting...';
+
+            let successCount = 0;
+            let failCount = 0;
+
+            for (const fileId of selectedFiles) {
+                try {
+                    await deleteFile(fileId);
+                    successCount++;
+                } catch (error) {
+                    failCount++;
+                }
+            }
+
+            deleteBtn.disabled = false;
+            deleteBtn.innerHTML = '<i data-lucide="trash-2"></i>Delete Selected (<span id="selectedCount">0</span>)';
+
+            if (successCount > 0) {
+                showNotification(`Successfully deleted ${successCount} file(s)`, 'success');
+                loadAllFiles();
+                loadCategoryStats();
+            }
+
+            if (failCount > 0) {
+                showNotification(`Failed to delete ${failCount} file(s)`, 'error');
+            }
+
+            selectedFiles = [];
+            updateSelectedFiles();
+        }
+
+        function viewFile(fileId) {
+            const file = allFiles.find(f => f.id === fileId);
+            if (file) {
+                window.open(`https://syrxtyfv.xyz/${file.category}/${file.filename}`, '_blank');
+            }
         }
 
         function logout() {
@@ -1572,7 +2055,12 @@
 
         async function uploadFile(fileId) {
             const fileData = selectedFiles.find(f => f.id === fileId);
-            if (!fileData || !fileData.category) return;
+            if (!fileData || !fileData.category) {
+                console.log('No file data or category:', fileData);
+                return;
+            }
+
+            console.log('Uploading file:', fileData.file.name, 'to category:', fileData.category);
 
             const progressBar = document.getElementById(`progress-${fileId}`);
             const uploadBtn = document.querySelector(`[onclick="uploadFile('${fileId}')"]`);
@@ -1586,6 +2074,7 @@
                 formData.append('category', fileData.category);
 
                 const authToken = localStorage.getItem('syrxty_admin_token');
+                console.log('Auth token:', authToken ? 'Present' : 'Missing');
                 
                 const response = await fetch('/api/upload', {
                     method: 'POST',
@@ -1595,7 +2084,9 @@
                     body: formData
                 });
 
+                console.log('Upload response status:', response.status);
                 const result = await response.json();
+                console.log('Upload result:', result);
 
                 if (result.success) {
                     progressBar.style.width = '100%';
@@ -1662,8 +2153,17 @@
         }
 
         function updateCategoryStats(category, fileSize) {
-            const countElement = document.getElementById(`${category}Count`);
-            const sizeElement = document.getElementById(`${category}Size`);
+            // Map category keys to HTML element IDs
+            const categoryMapping = {
+                'thumbnails': 'thumbnails',
+                'logos': 'logos', 
+                'product-banners': 'productBanners',
+                'product-boxes': 'productBoxes'
+            };
+            
+            const elementId = categoryMapping[category];
+            const countElement = document.getElementById(`${elementId}Count`);
+            const sizeElement = document.getElementById(`${elementId}Size`);
             
             if (countElement && sizeElement) {
                 const currentCount = parseInt(countElement.textContent) || 0;
@@ -1686,22 +2186,54 @@
                 const result = await response.json();
                 
                 if (result.success) {
+                    console.log('Stats loaded successfully:', result.stats);
+                    // Map category keys to HTML element IDs
+                    const categoryMapping = {
+                        'thumbnails': 'thumbnails',
+                        'logos': 'logos', 
+                        'product-banners': 'productBanners',
+                        'product-boxes': 'productBoxes'
+                    };
+                    
                     Object.keys(CATEGORIES).forEach(category => {
                         const stats = result.stats[category] || { count: 0, size: 0 };
-                        const countElement = document.getElementById(`${category}Count`);
-                        const sizeElement = document.getElementById(`${category}Size`);
+                        const elementId = categoryMapping[category];
+                        const countElement = document.getElementById(`${elementId}Count`);
+                        const sizeElement = document.getElementById(`${elementId}Size`);
                         
-                        if (countElement) countElement.textContent = stats.count;
-                        if (sizeElement) sizeElement.textContent = stats.sizeFormatted || '0 B';
+                        console.log(`Updating ${category}:`, stats, `Elements: ${elementId}Count, ${elementId}Size`);
+                        
+                        if (countElement) {
+                            countElement.textContent = stats.count;
+                            console.log(`Updated ${elementId}Count to:`, stats.count);
+                        } else {
+                            console.log(`Element ${elementId}Count not found`);
+                        }
+                        
+                        if (sizeElement) {
+                            sizeElement.textContent = stats.sizeFormatted || '0 B';
+                            console.log(`Updated ${elementId}Size to:`, stats.sizeFormatted || '0 B');
+                        } else {
+                            console.log(`Element ${elementId}Size not found`);
+                        }
                     });
                 } else {
                     console.error('Failed to load stats:', result.error);
                 }
             } catch (error) {
                 console.error('Error loading stats:', error);
+                // Reset to 0 on error
+                const categoryMapping = {
+                    'thumbnails': 'thumbnails',
+                    'logos': 'logos', 
+                    'product-banners': 'productBanners',
+                    'product-boxes': 'productBoxes'
+                };
+                
                 Object.keys(CATEGORIES).forEach(category => {
-                    const countElement = document.getElementById(`${category}Count`);
-                    const sizeElement = document.getElementById(`${category}Size`);
+                    const elementId = categoryMapping[category];
+                    const countElement = document.getElementById(`${elementId}Count`);
+                    const sizeElement = document.getElementById(`${elementId}Size`);
                     
                     if (countElement) countElement.textContent = '0';
                     if (sizeElement) sizeElement.textContent = '0 B';
