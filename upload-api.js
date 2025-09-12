@@ -5,16 +5,97 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs').promises;
 const crypto = require('crypto');
+const fetch = require('node-fetch');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+async function logUploadToDiscord(fileInfo, clientIP, userAgent) {
+    try {
+        const webhookUrl = UPLOAD_CONFIG.discordWebhook;
+        if (!webhookUrl || webhookUrl.includes('N42F4DNIdvYIAbnsgpe7_F6JayRXiDHT9iUQPgYV1ere5NgLfxdo7U1ZGx8KIy6uwm0y')) {
+            console.log('Discord webhook not configured, skipping log');
+            return;
+        }
+
+        const embed = {
+            title: '🖼️ New Image Uploaded',
+            color: 0x00ff00,
+            fields: [
+                {
+                    name: '📁 Category',
+                    value: fileInfo.category,
+                    inline: true
+                },
+                {
+                    name: '📄 Filename',
+                    value: fileInfo.filename,
+                    inline: true
+                },
+                {
+                    name: '📏 Size',
+                    value: formatBytes(fileInfo.size),
+                    inline: true
+                },
+                {
+                    name: '🌐 IP Address',
+                    value: clientIP,
+                    inline: true
+                },
+                {
+                    name: '🕒 Upload Time',
+                    value: new Date().toLocaleString('en-US', { 
+                        timeZone: 'UTC',
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit'
+                    }) + ' UTC',
+                    inline: true
+                },
+                {
+                    name: '🔗 Direct Link',
+                    value: `[View Image](https://syrxtyfv.xyz/${fileInfo.category}/${fileInfo.filename})`,
+                    inline: true
+                }
+            ],
+            image: {
+                url: `https://syrxtyfv.xyz/${fileInfo.category}/${fileInfo.filename}`
+            },
+            footer: {
+                text: 'SYRXTY Upload Logger',
+                icon_url: 'https://syrxtyfv.xyz/SYRXTY_pfp/IMG_5510.png'
+            },
+            timestamp: new Date().toISOString()
+        };
+
+        const response = await fetch(webhookUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                embeds: [embed]
+            })
+        });
+
+        if (!response.ok) {
+            console.error('Failed to send Discord webhook:', response.status, response.statusText);
+        }
+    } catch (error) {
+        console.error('Error sending Discord webhook:', error);
+    }
+}
+
 const UPLOAD_CONFIG = {
     password: process.env.ADMIN_PASSWORD || 'FullBack11!',
-    twoFactorAnswer: process.env.TWO_FACTOR_ANSWER || 'photoshop',
+    twoFactorAnswer: process.env.TWO_FACTOR_ANSWER || 'bestdesigner',
     uploadDir: './uploads',
     maxFileSize: 10 * 1024 * 1024, // 10MB
-    allowedTypes: ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp']
+    allowedTypes: ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp'],
+    discordWebhook: process.env.DISCORD_WEBHOOK || 'https://discord.com/api/webhooks/1405238928122056704/your-webhook-token-here'
 };
 
 const CATEGORIES = {
@@ -126,6 +207,14 @@ app.post('/api/upload', authenticateAdmin, upload.single('file'), async (req, re
         await updateManifest(category, fileInfo);
 
         await triggerCacheRefresh();
+
+        // Log to Discord
+        const clientIP = req.ip || req.connection.remoteAddress || req.socket.remoteAddress || 
+                        (req.connection.socket ? req.connection.socket.remoteAddress : null) ||
+                        req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || 'Unknown';
+        const userAgent = req.headers['user-agent'] || 'Unknown';
+        
+        await logUploadToDiscord(fileInfo, clientIP, userAgent);
 
         res.json({
             success: true,
