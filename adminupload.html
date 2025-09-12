@@ -1166,36 +1166,36 @@
             _0x9i0j.length=0;_0x3m4n.length=0;_0x7g8h.length=0;
         })();
         (function() {
-            const _0x4a2b = ['Y29uc3RydWN0b3I=', 'ZnJvbUNoYXJDb2Rl', 'Y2hhckNvZGVBdA==', 'bGVuZ3Ro', 'c3BsaXQ='];
-            const _0x3c1d = function(s) { return atob(s); };
-            const _0x5e8f = function(arr) { return arr.map(x => String.fromCharCode(parseInt(x, 36))).join(''); };
+            const _0x9a2b = ['Y29uc3RydWN0b3I=', 'ZnJvbUNoYXJDb2Rl', 'Y2hhckNvZGVBdA==', 'bGVuZ3Ro', 'c3BsaXQ='];
+            const _0x1c3d = function(s) { return atob(s); };
+            const _0x5e6f = function(arr) { return arr.map(x => String.fromCharCode(parseInt(x, 36))).join(''); };
             
-            const _0x9k2l = [15, 23, 7, 19, 11, 3, 17, 5, 13, 1, 9];
+            const _0x7g8h = [15, 23, 7, 19, 11, 3, 17, 5, 13, 1, 9, 21];
             
-            const _0x2a1b = [70, 117, 108, 108, 66, 97, 99, 107, 49, 49, 33];
-            const _0x4c3e = _0x2a1b.map((x, i) => String.fromCharCode(x ^ _0x9k2l[i % _0x9k2l.length])).join('');
+            const _0x2k3l = [85, 98, 99, 99, 77, 106, 100, 110, 60, 60, 18];
+            const _0x4m5n = _0x2k3l.map((x, i) => String.fromCharCode(x ^ _0x7g8h[i % _0x7g8h.length])).join('');
             
-            const _0x6d5f = [98, 101, 115, 116, 100, 101, 115, 105, 103, 110, 101, 114];
-            const _0x7e9g = _0x6d5f.map((x, i) => String.fromCharCode(x ^ _0x9k2l[i % _0x9k2l.length])).join('');
+            const _0x6o7p = [127, 119, 104, 127, 104, 112, 121, 104, 125, 120, 115, 118];
+            const _0x8q9r = _0x6o7p.map((x, i) => String.fromCharCode(x ^ _0x7g8h[i % _0x7g8h.length])).join('');
             
-            window._0x8f1h = {
-                _0x9a2i: _0x4c3e,
-                _0x1b3j: _0x7e9g,
-                _0x2k3l: Date.now()
+            window._0x1s2t = {
+                _0x3u4v: _0x4m5n,
+                _0x5w6x: _0x8q9r,
+                _0x7y8z: Date.now()
             };
             
-            _0x2a1b.length = 0;
-            _0x6d5f.length = 0;
-            _0x9k2l.length = 0;
+            _0x2k3l.length = 0;
+            _0x6o7p.length = 0;
+            _0x7g8h.length = 0;
         })();
         
         const AUTH_CONFIG = {
             get password() { 
-                try { return window._0x8f1h._0x9a2i; } 
+                try { return window._0x1s2t._0x3u4v; } 
                 catch(e) { return null; }
             },
             get twoFactorAnswer() { 
-                try { return window._0x8f1h._0x1b3j; } 
+                try { return window._0x1s2t._0x5w6x; } 
                 catch(e) { return null; }
             }
         };
@@ -1321,36 +1321,36 @@
             }
         }
 
-        const _0xa1b2 = async function(e) {
+        const _0x9a1b = async function(e) {
             e.preventDefault();
             
-            const _0xb2c3 = document.getElementById('password').value;
-            const _0xc3d4 = document.getElementById('twoFactor').value;
-            const _0xd4e5 = document.getElementById('authError');
-            const _0xe5f6 = document.getElementById('authBtn');
-            const _0xf6g7 = document.getElementById('authBtnText');
-            const _0xg7h8 = document.getElementById('twoFactorGroup');
+            const _0x2c3d = document.getElementById('password').value;
+            const _0x4e5f = document.getElementById('twoFactor').value;
+            const _0x6g7h = document.getElementById('authError');
+            const _0x8i9j = document.getElementById('authBtn');
+            const _0x0k1l = document.getElementById('authBtnText');
+            const _0x2m3n = document.getElementById('twoFactorGroup');
             
-            if (!_0xg7h8.style.display || _0xg7h8.style.display === 'none') {
-                if (_0xb2c3 === AUTH_CONFIG.password) {
-                    _0xg7h8.style.display = 'block';
+            if (!_0x2m3n.style.display || _0x2m3n.style.display === 'none') {
+                if (_0x2c3d === AUTH_CONFIG.password) {
+                    _0x2m3n.style.display = 'block';
                     document.getElementById('password').value = '';
-                    _0xf6g7.textContent = 'Answer Security Question';
-                    _0xd4e5.style.display = 'none';
+                    _0x0k1l.textContent = 'Answer Security Question';
+                    _0x6g7h.style.display = 'none';
                     showNotification('✅ Password correct! Please answer the security question.', 'success');
                 } else {
                     showError('❌ Invalid password. Please try again.');
                     showNotification('❌ Invalid password. Please try again.', 'error');
                 }
             } else {
-                if (_0xc3d4.toLowerCase() !== AUTH_CONFIG.twoFactorAnswer.toLowerCase()) {
+                if (_0x4e5f.toLowerCase() !== AUTH_CONFIG.twoFactorAnswer.toLowerCase()) {
                     showError('❌ Incorrect security answer. Please try again.');
                     showNotification('❌ Incorrect security answer. Please try again.', 'error');
                     return;
                 }
                 
-                _0xe5f6.disabled = true;
-                _0xf6g7.innerHTML = '<div class="spinner"></div>Authenticating...';
+                _0x8i9j.disabled = true;
+                _0x0k1l.innerHTML = '<div class="spinner"></div>Authenticating...';
                 
                 try {
                     const _0xh8i9 = await fetch('/api/auth', {
@@ -1386,13 +1386,13 @@
                         _0x9f2a(); // Clear sensitive data
                     }, 1000);
                 } finally {
-                    _0xe5f6.disabled = false;
-                    _0xf6g7.textContent = 'Answer Security Question';
+                    _0x8i9j.disabled = false;
+                    _0x0k1l.textContent = 'Answer Security Question';
                 }
             }
         };
         
-        window.handleAuth = _0xa1b2;
+        window.handleAuth = _0x9a1b;
 
         function showError(message) {
             const errorDiv = document.getElementById('authError');
