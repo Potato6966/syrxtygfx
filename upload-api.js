@@ -164,6 +164,90 @@ app.get('/health', (req, res) => {
     res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
+app.get('/api/files', authenticateAdmin, async (req, res) => {
+    try {
+        const files = [];
+        
+        for (const [categoryKey, folderPath] of Object.entries(CATEGORIES)) {
+            const categoryDir = path.join(UPLOAD_CONFIG.uploadDir, folderPath);
+            
+            try {
+                const categoryFiles = await fs.readdir(categoryDir);
+                
+                for (const filename of categoryFiles) {
+                    const filePath = path.join(categoryDir, filename);
+                    const stats = await fs.stat(filePath);
+                    
+                    if (stats.isFile()) {
+                        files.push({
+                            id: `${categoryKey}-${filename}`,
+                            filename: filename,
+                            category: categoryKey,
+                            size: stats.size,
+                            uploadedAt: stats.mtime.toISOString(),
+                            path: filePath
+                        });
+                    }
+                }
+            } catch (error) {
+                console.log(`Category ${categoryKey} not found or empty`);
+            }
+        }
+        
+        res.json({
+            success: true,
+            files: files.sort((a, b) => new Date(b.uploadedAt) - new Date(a.uploadedAt))
+        });
+    } catch (error) {
+        console.error('Error fetching files:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to fetch files'
+        });
+    }
+});
+
+app.delete('/api/file/:category/:filename', authenticateAdmin, async (req, res) => {
+    try {
+        const { category, filename } = req.params;
+        
+        if (!CATEGORIES[category]) {
+            return res.status(400).json({
+                success: false,
+                error: 'Invalid category'
+            });
+        }
+        
+        const filePath = path.join(UPLOAD_CONFIG.uploadDir, CATEGORIES[category], filename);
+        
+        try {
+            await fs.unlink(filePath);
+            
+            await updateManifest(category, null, filename);
+            await triggerCacheRefresh();
+            
+            res.json({
+                success: true,
+                message: 'File deleted successfully'
+            });
+        } catch (error) {
+            if (error.code === 'ENOENT') {
+                return res.status(404).json({
+                    success: false,
+                    error: 'File not found'
+                });
+            }
+            throw error;
+        }
+    } catch (error) {
+        console.error('Delete error:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to delete file'
+        });
+    }
+});
+
 app.post('/api/auth', (req, res) => {
     const { password, twoFactor } = req.body;
     
