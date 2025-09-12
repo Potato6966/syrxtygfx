@@ -18,7 +18,6 @@
 </head>
 <body class="bw-mode build-up-mode">
     <div class="light-overlay"></div>
-    <!-- Mouse tracking light -->
     <div class="mouse-light" id="mouseLight"></div>
     <div class="color-splash-overlay">
         <div class="splash-content">
@@ -727,7 +726,6 @@
     <script>
         lucide.createIcons();
         
-        // Initialize mouse tracking light
         function initializeMouseTracking() {
             const mouseLight = document.getElementById('mouseLight');
             let mouseX = 0;
@@ -741,7 +739,6 @@
             });
 
             function updateLightPosition() {
-                // Smooth following with easing
                 lightX += (mouseX - lightX) * 0.1;
                 lightY += (mouseY - lightY) * 0.1;
                 
@@ -754,20 +751,16 @@
             updateLightPosition();
         }
         
-        // Start mouse tracking when page loads
         document.addEventListener('DOMContentLoaded', initializeMouseTracking);
         
-        // Register service worker for auto-refresh
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js')
                 .then(registration => {
                     console.log('Service Worker registered:', registration);
                     
-                    // Listen for service worker messages
                     navigator.serviceWorker.addEventListener('message', event => {
                         if (event.data.type === 'DOWNLOAD_STARTED') {
                             console.log(`Downloading ${event.data.count} new images in background...`);
-                            // Show download notification
                             const notification = document.createElement('div');
                             notification.id = 'download-notification';
                             notification.style.cssText = `
@@ -794,7 +787,6 @@
                         
                         if (event.data.type === 'DOWNLOAD_COMPLETED') {
                             console.log(`Download completed! Refreshing page...`);
-                            // Update notification
                             const notification = document.getElementById('download-notification');
                             if (notification) {
                                 notification.innerHTML = `
@@ -805,7 +797,6 @@
                                 `;
                             }
                             
-                            // Refresh after download is complete
                             setTimeout(() => {
                                 window.location.reload(true);
                             }, 1500);
@@ -817,7 +808,6 @@
                 });
         }
         
-        // Add spinner animation
         const style = document.createElement('style');
         style.textContent = `
             @keyframes spin {
