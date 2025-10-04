@@ -144,6 +144,48 @@
   margin-bottom: 20px;
 }
 
+/* Service Cards Grid */
+.service-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 20px;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.service-card {
+    background: rgba(15, 20, 41, 0.7);
+    border: 1px solid rgba(59, 130, 246, 0.35);
+    border-radius: 12px;
+    padding: 24px;
+    text-align: center;
+    backdrop-filter: blur(14px);
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 20px rgba(59, 130, 246, 0.1);
+}
+
+.service-card:hover {
+    transform: translateY(-5px);
+    border-color: rgba(59, 130, 246, 0.6);
+    box-shadow: 0 8px 30px rgba(59, 130, 246, 0.2);
+    background: rgba(15, 20, 41, 0.8);
+}
+
+.service-icon {
+    font-size: 2.5rem;
+    margin-bottom: 12px;
+    display: block;
+}
+
+.service-card h4 {
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0;
+    line-height: 1.2;
+}
+
 
 ::-webkit-scrollbar {
     width: 12px;
