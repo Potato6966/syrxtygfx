@@ -49,18 +49,6 @@
         </div>
     </nav>
 
-    <!-- App Loader Overlay -->
-    <div id="app-loader" class="app-loader" aria-live="polite" aria-busy="true">
-        <div class="loader-card">
-            <div class="loader-title">Preparing assets…</div>
-            <div class="loader-sub">Loading images and resources. This can take up to a minute on first visit.</div>
-            <div class="loader-progress">
-                <div class="loader-bar" id="loader-bar" style="width: 0%"></div>
-            </div>
-            <div class="loader-percent" id="loader-percent">0%</div>
-        </div>
-        <div class="loader-grid"></div>
-    </div>
 
     <!-- Inline social buttons will appear inside the Portfolio header below -->
 
@@ -822,23 +810,20 @@
             }
         })();
 
-        // Basic arrow nav for reviews (assist scrolling)
-        (function reviewsArrowNav(){
+        // Reviews slider - let CSS animation handle it naturally
+        (function reviewsSliderSetup(){
             const track = document.querySelector('.reviews-track');
             const slider = document.querySelector('.reviews-slider');
-            const prev = document.querySelector('.reviews-prev');
-            const next = document.querySelector('.reviews-next');
-            if (!track || !slider || !prev || !next) return;
-            let offset = 0;
-            const step = 320; // approx card width
-            function update(){
-                track.style.animation = 'none';
-                track.style.transform = `translateX(${offset}px)`;
-            }
-            prev.addEventListener('click', () => { offset = Math.min(offset + step, 0); update(); });
-            next.addEventListener('click', () => { offset -= step; update(); });
-            // Allow wheel/drag on desktop for UX
-            slider.addEventListener('wheel', (e) => { e.preventDefault(); offset -= Math.sign(e.deltaY) * step; update(); }, { passive: false });
+            if (!track || !slider) return;
+            
+            // Pause animation on hover for better UX
+            slider.addEventListener('mouseenter', () => {
+                track.style.animationPlayState = 'paused';
+            });
+            
+            slider.addEventListener('mouseleave', () => {
+                track.style.animationPlayState = 'running';
+            });
         })();
         
         if ('serviceWorker' in navigator) {
@@ -915,33 +900,16 @@
             }
 
             async downloadAssets() {
-                const loader = document.getElementById('app-loader');
-                const progressBar = document.getElementById('loader-bar');
-                const progressPercent = document.getElementById('loader-percent');
-                
-                if (loader) {
-                    loader.style.display = 'flex';
-                }
-
                 const allAssets = Object.values(this.assets).flat();
-                let downloaded = 0;
-                const total = allAssets.length;
 
                 const downloadPromises = allAssets.map(async (url) => {
                     try {
                         const response = await fetch(url);
                         const blob = await response.blob();
                         const objectUrl = URL.createObjectURL(blob);
-                        downloaded++;
-                        
-                        const progress = (downloaded / total) * 100;
-                        if (progressBar) progressBar.style.width = progress + '%';
-                        if (progressPercent) progressPercent.textContent = Math.round(progress) + '%';
-                        
                         return { url, objectUrl };
                     } catch (error) {
                         console.error('Failed to download asset:', url, error);
-                        downloaded++;
                         return { url, objectUrl: url }; // Fallback to original URL
                     }
                 });
@@ -953,13 +921,6 @@
                 });
 
                 await this.saveCache(assetMap);
-                
-                if (loader) {
-                    setTimeout(() => {
-                        loader.style.display = 'none';
-                    }, 500);
-                }
-
                 return assetMap;
             }
 
@@ -967,12 +928,6 @@
                 let cachedAssets = await this.checkCache();
                 if (!cachedAssets) {
                     cachedAssets = await this.downloadAssets();
-                } else {
-                    // Hide loader if assets are cached
-                    const loader = document.getElementById('app-loader');
-                    if (loader) {
-                        loader.style.display = 'none';
-                    }
                 }
                 return cachedAssets;
             }
