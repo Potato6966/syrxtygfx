@@ -4,6 +4,20 @@
     box-sizing: border-box;
 }
 
+/* Prevent layout shifts and glitching */
+html {
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+    /* Prevent scrollbar width changes from causing jumps */
+    scrollbar-gutter: stable;
+}
+
+/* Force hardware acceleration for smooth animations */
+.hero, .about, .portfolio, .pricing, .contact {
+    transform: translateZ(0);
+    will-change: auto;
+}
+
 /* Splash Screen */
 .splash-screen {
     position: fixed;
@@ -29,7 +43,9 @@
 .splash-content {
     text-align: center;
     color: white;
-    animation: splashFadeIn 2s ease-in-out;
+    animation: splashFadeIn 1.5s ease-out;
+    /* Prevent layout shifts */
+    will-change: opacity, transform;
 }
 
 .splash-logo {
@@ -82,7 +98,7 @@
 }
 
 @keyframes splashFadeIn {
-    0% { opacity: 0; transform: translateY(30px); }
+    0% { opacity: 0; transform: translateY(15px); }
     100% { opacity: 1; transform: translateY(0); }
 }
 
@@ -98,7 +114,7 @@
 
 @keyframes splashBounce {
     0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
+    50% { transform: translateY(-5px); }
 }
 
 @keyframes splashArrow {
@@ -163,12 +179,15 @@
     backdrop-filter: blur(14px);
     transition: all 0.3s ease;
     box-shadow: 0 4px 20px rgba(59, 130, 246, 0.1);
+    /* Prevent layout shifts */
+    will-change: transform;
+    transform: translateZ(0);
 }
 
 .service-card:hover {
-    transform: translateY(-5px);
+    transform: translateY(-3px);
     border-color: rgba(59, 130, 246, 0.6);
-    box-shadow: 0 8px 30px rgba(59, 130, 246, 0.2);
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.15);
     background: rgba(15, 20, 41, 0.8);
 }
 
@@ -228,6 +247,12 @@ body {
     color: #ffffff;
     overflow-x: hidden;
     position: relative;
+    /* Prevent layout shifts and glitching */
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    /* Prevent content jumping */
+    min-height: 100vh;
+    width: 100%;
 }
 
 body::after {
