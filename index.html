@@ -347,28 +347,17 @@
                     <h2 class="section-title">Portfolio</h2>
                     <p class="section-subtitle">Explore my latest work across different categories</p>
                 </div>
-                <div class="social-inline" aria-label="Social links">
-                    <a href="https://x.com/syrxtyfn" target="_blank" class="social-inline-btn" title="X / Twitter">
-                        <i data-lucide="twitter"></i>
-                    </a>
-                    <a href="https://youtube.com/@syrxtyfn" target="_blank" class="social-inline-btn" title="YouTube">
-                        <i data-lucide="play"></i>
-                    </a>
-                    <a href="https://tiktok.com/@syrxty" target="_blank" class="social-inline-btn" title="TikTok">
-                        <i data-lucide="video"></i>
-                    </a>
-                </div>
             </div>
             
             <div class="portfolio-grid">
                 <div class="portfolio-card" data-category="thumbnails">
                     <div class="portfolio-preview">
                         <div class="portfolio-thumbnail" id="thumbnail-preview-1">
-                            <img src="" alt="Thumbnail Preview" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
+                            <img src="" alt="Thumbnail Preview">
                         </div>
-                        <div class="portfolio-count">
-                            <span class="count-text">59 items</span>
-                        </div>
+                    </div>
+                    <div class="portfolio-count">
+                        <span class="count-text">59 items</span>
                     </div>
                     <h3>Thumbnails</h3>
                     <p>Eye-catching thumbnails for gaming content</p>
@@ -378,11 +367,11 @@
                 <div class="portfolio-card" data-category="logos">
                     <div class="portfolio-preview">
                         <div class="portfolio-thumbnail" id="thumbnail-preview-2">
-                            <img src="" alt="Logo Preview" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
+                            <img src="" alt="Logo Preview">
                         </div>
-                        <div class="portfolio-count">
-                            <span class="count-text">7 items</span>
-                        </div>
+                    </div>
+                    <div class="portfolio-count">
+                        <span class="count-text">7 items</span>
                     </div>
                     <h3>Logos</h3>
                     <p>Professional brand identity designs</p>
@@ -392,11 +381,11 @@
                 <div class="portfolio-card" data-category="product-banners">
                     <div class="portfolio-preview">
                         <div class="portfolio-thumbnail" id="thumbnail-preview-3">
-                            <img src="" alt="Banner Preview" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
+                            <img src="" alt="Banner Preview">
                         </div>
-                        <div class="portfolio-count">
-                            <span class="count-text">34 items</span>
-                        </div>
+                    </div>
+                    <div class="portfolio-count">
+                        <span class="count-text">34 items</span>
                     </div>
                     <h3>Product Banners</h3>
                     <p>Promotional banners for products</p>
@@ -406,11 +395,11 @@
                 <div class="portfolio-card" data-category="product-boxes">
                     <div class="portfolio-preview">
                         <div class="portfolio-thumbnail" id="thumbnail-preview-4">
-                            <img src="" alt="Product Box Preview" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
+                            <img src="" alt="Product Box Preview">
                         </div>
-                        <div class="portfolio-count">
-                            <span class="count-text">35 items</span>
-                        </div>
+                    </div>
+                    <div class="portfolio-count">
+                        <span class="count-text">35 items</span>
                     </div>
                     <h3>Product Boxes</h3>
                     <p>3D product box designs</p>
@@ -977,14 +966,26 @@
             }
             .portfolio-thumbnail {
                 width: 100%;
-                height: 120px;
-                border-radius: 8px;
+                height: 180px;
+                border-radius: 12px;
                 overflow: hidden;
-                margin-bottom: 10px;
                 transition: transform 0.3s ease;
             }
             .portfolio-thumbnail:hover {
                 transform: scale(1.05);
+            }
+            .portfolio-thumbnail img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                border-radius: 12px;
+            }
+            .portfolio-count {
+                margin-top: 15px;
+                text-align: center;
+            }
+            .portfolio-preview {
+                margin-bottom: 20px;
             }
             .showcase-grid {
                 display: grid;
