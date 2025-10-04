@@ -394,6 +394,30 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // Fill About showcase grid with actual recent works (must live OUTSIDE the class)
+    function populateAboutShowcase() {
+        const grid = document.getElementById('about-showcase-grid');
+        if (!grid) return;
+        const pickFrom = (portfolioData['thumbnails'] && portfolioData['thumbnails'].length
+            ? portfolioData['thumbnails']
+            : (portfolioData['product-banners'] || [])
+        );
+        if (!pickFrom || pickFrom.length === 0) return;
+        const sample = pickFrom.slice(0, 6);
+        const frag = document.createDocumentFragment();
+        sample.forEach(img => {
+            const item = document.createElement('div');
+            item.className = 'showcase-item';
+            const image = document.createElement('img');
+            image.src = img.path || img;
+            image.alt = (img.name || 'Work');
+            item.appendChild(image);
+            frag.appendChild(item);
+        });
+        grid.innerHTML = '';
+        grid.appendChild(frag);
+    }
+
     const cacheManager = new ImageCacheManager();
     let cacheInitialized = false;
 
@@ -409,7 +433,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         function applyDuration() {
             const contentWidth = reviewsTrack.scrollWidth;
-            const speedPxPerSec = 80; // adjust for desired speed
+            const speedPxPerSec = 120; // faster glide
             const duration = Math.max(20, Math.round((contentWidth / speedPxPerSec)));
             reviewsTrack.style.animationDuration = `${duration}s`;
         }
@@ -711,6 +735,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     const pct = document.getElementById('loader-percent');
                     if (bar) bar.style.width = `${this.percentage}%`;
                     if (pct) pct.textContent = `${this.percentage}%`;
+                    // Early dismiss when enough is ready
+                    if (this.percentage >= 35) {
+                        const loader = document.getElementById('app-loader');
+                        if (loader && loader.style.display !== 'none') {
+                            loader.style.opacity = '0';
+                            setTimeout(() => loader.style.display = 'none', 300);
+                        }
+                    }
                 } catch (_) {}
             },
             updateLoadingTexts: function() {
@@ -774,8 +806,8 @@ document.addEventListener('DOMContentLoaded', function() {
             if (roundPromises.length > 0) {
                 await Promise.allSettled(roundPromises);
                 console.log(`🔄 Round ${round + 1} completed (${roundPromises.length} images)`);
-
-                await new Promise(resolve => setTimeout(resolve, 25));
+                // smaller yield to speed things up
+                await new Promise(resolve => setTimeout(resolve, 5));
             }
         }
 
@@ -1607,8 +1639,9 @@ document.addEventListener('DOMContentLoaded', function() {
         
         console.log('⚡⚡⚡ ULTRA-LIGHTNING portfolio ready! All images available instantly!');
 
-        // Ensure reviews auto-scroll is configured (after DOM is painted and widths are known)
+        // Ensure reviews auto-scroll & About showcase are configured after data is ready
         setupReviewsAutoScroll();
+        populateAboutShowcase();
 
         // Keep counts fresh (function is defined elsewhere in this file)
         setInterval(refreshCountsAndSyncCache, 30000);
