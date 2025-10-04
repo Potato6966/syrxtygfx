@@ -14,6 +14,7 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  pointer-events: none; /* allow interaction/scrolling beneath */
 }
 .app-loader .loader-grid {
   position: absolute; inset: 0; pointer-events: none; opacity: .35;
@@ -24,10 +25,12 @@
   animation: gridMove 30s linear infinite;
 }
 .loader-card { position: relative; z-index: 1; max-width: 520px; width: calc(100% - 40px); padding: 28px; border-radius: 16px; background: rgba(15,20,41,.7); border:1px solid rgba(59,130,246,.35); backdrop-filter: blur(14px); text-align: center; box-shadow: 0 20px 60px rgba(59,130,246,.25); }
-.loader-title { font-weight: 900; font-size: 1.4rem; margin-bottom: 8px; background: linear-gradient(135deg,#fff,#93c5fd,#3b82f6); -webkit-background-clip:text; -webkit-text-fill-color: transparent; }
+.loader-title { font-weight: 900; font-size: 1.4rem; margin-bottom: 8px; background: linear-gradient(135deg,#fff,#93c5fd,#3b82f6); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color: transparent; color: transparent; }
 .loader-sub { color:#cbd5e1; margin-bottom: 16px; }
 .loader-progress { height: 10px; border-radius: 999px; background: rgba(59,130,246,.2); overflow: hidden; border: 1px solid rgba(59,130,246,.35); }
-.loader-bar { height: 100%; background: linear-gradient(90deg,#3b82f6,#93c5fd); box-shadow: 0 0 20px rgba(59,130,246,.6); transition: width .3s ease; }
+.loader-bar { height: 100%; background: linear-gradient(90deg,#3b82f6,#93c5fd); box-shadow: 0 0 20px rgba(59,130,246,.6); transition: width .3s ease; position: relative; overflow: hidden; }
+.loader-bar::after { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient( 45deg, rgba(255,255,255,.12) 0 10px, rgba(255,255,255,0) 10px 20px ); transform: translateX(0); animation: loaderStripes 1.2s linear infinite; }
+@keyframes loaderStripes { from { transform: translateX(0); } to { transform: translateX(40px); } }
 .loader-percent { margin-top: 10px; color: #93c5fd; font-weight: 700; }
 
 /* About header bar with inline socials */
@@ -1302,6 +1305,12 @@ button:focus-visible,
     max-width: 500px;
     margin: 0 auto;
 }
+
+/* About showcase thumbnails */
+#about-showcase-grid { grid-template-columns: repeat(3, 1fr); gap: 12px; max-width: 420px; }
+#about-showcase-grid .showcase-item { padding: 0; overflow: hidden; }
+#about-showcase-grid img { width: 100%; height: 100px; object-fit: cover; display:block; border-radius: 12px; }
+@media (max-width: 900px) { #about-showcase-grid { grid-template-columns: repeat(2, 1fr); max-width: 100%; } #about-showcase-grid img { height: 90px; } }
 
 .showcase-item {
     background: rgba(15, 20, 41, 0.4);
