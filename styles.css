@@ -10,12 +10,20 @@ html {
     overflow-x: hidden;
     /* Prevent scrollbar width changes from causing jumps */
     scrollbar-gutter: stable;
+    /* Prevent flickering */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 /* Force hardware acceleration for smooth animations */
 .hero, .about, .portfolio, .pricing, .contact {
     transform: translateZ(0);
     will-change: auto;
+    /* Prevent flickering */
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    -webkit-perspective: 1000px;
+    perspective: 1000px;
 }
 
 /* Splash Screen */
@@ -263,6 +271,11 @@ body {
     /* Prevent content jumping */
     min-height: 100vh;
     width: 100%;
+    /* Prevent flickering */
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 body::after {
@@ -329,6 +342,10 @@ body::before {
     z-index: 1;
     transition: transform 0.1s ease-out;
     mix-blend-mode: screen;
+    /* Prevent flickering */
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    will-change: transform;
 }
 
 .mouse-light::before {
@@ -556,7 +573,13 @@ body::before {
 }
 
 /* Always animate reviews slider and hide motion note */
-.reviews-track { animation: scrollReviews 30s linear infinite; }
+.reviews-track { 
+    animation: scrollReviews 30s linear infinite;
+    /* Prevent flickering */
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    will-change: transform;
+}
 .motion-note { display: none !important; }
 
 .nav-link.active {
@@ -1453,8 +1476,8 @@ button:focus-visible,
 }
 
 .profile-image {
-    width: 120px;
-    height: 120px;
+    width: 80px;
+    height: 80px;
     border-radius: 50%;
     overflow: hidden;
     border: 3px solid rgba(59, 130, 246, 0.3);
@@ -2444,8 +2467,8 @@ button:focus-visible,
     }
     
     .profile-image {
-        width: 100px;
-        height: 100px;
+        width: 70px;
+        height: 70px;
     }
     
     .contact-discord {
