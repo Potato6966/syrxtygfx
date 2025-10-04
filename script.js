@@ -28,6 +28,17 @@ document.addEventListener('DOMContentLoaded', function() {
     
     let buildUpActive = true;
 
+    // Simple splash screen interaction
+    if (addColorBtn) {
+        addColorBtn.addEventListener('click', function() {
+            if (overlay) {
+                overlay.classList.add('hidden');
+                body.classList.remove('bw-mode');
+                body.classList.add('color-mode');
+            }
+        });
+    }
+
     let backgroundImages = [];
 
     let selectedBackgroundImage = null;
