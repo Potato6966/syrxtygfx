@@ -1,3 +1,12 @@
+    // Helper: update loader bar and percent
+    function setLoaderProgress(pct) {
+        try {
+            const bar = document.getElementById('loader-bar');
+            const pctText = document.getElementById('loader-percent');
+            if (bar) bar.style.width = `${Math.max(0, Math.min(100, Math.round(pct)))}%`;
+            if (pctText) pctText.textContent = `${Math.max(0, Math.min(100, Math.round(pct)))}%`;
+        } catch (_) {}
+    }
 (function(){var _0xscramble=function(){var _0xkeys=[Math.floor(Math.random()*100),Math.floor(Math.random()*100),Math.floor(Math.random()*100)];var _0xobfuscate=function(code){return code.split('').map((c,i)=>String.fromCharCode(c.charCodeAt(0)^_0xkeys[i%3])).join('');};var _0xoriginal=document.querySelector('script[src*="script.js"]');if(_0xoriginal){var _0xcontent=_0xoriginal.innerHTML||'';if(_0xcontent.length>100){var _0xscrambled=_0xobfuscate(_0xcontent);_0xoriginal.innerHTML=_0xscrambled;}}};setTimeout(_0xscramble,Math.random()*1000+500);})();
 document.addEventListener('DOMContentLoaded', function() {
     const body = document.body;
@@ -446,6 +455,19 @@ document.addEventListener('DOMContentLoaded', function() {
             reviewsTrack.style.animation = '';
             applyDuration();
         });
+
+        // Pause animation when section is offscreen to save CPU
+        const obs = new IntersectionObserver((entries) => {
+            entries.forEach(e => {
+                reviewsTrack.style.animationPlayState = e.isIntersecting ? 'running' : 'paused';
+            });
+        }, { threshold: 0.05 });
+        obs.observe(reviewsSlider);
+
+        // Also pause when tab is hidden
+        document.addEventListener('visibilitychange', () => {
+            reviewsTrack.style.animationPlayState = document.hidden ? 'paused' : 'running';
+        });
     }
 
     async function getImagesManifest() {
@@ -833,7 +855,8 @@ document.addEventListener('DOMContentLoaded', function() {
             updateCategoryStatus(category, 'loading', 0);
         });
 
-        const categoryPromises = categories.map(async (category) => {
+        let completedCats = 0;
+        const categoryPromises = categories.map(async (category, idx) => {
             const categoryInfo = portfolioCategories[category];
             const categoryFiles = await getCategoryFilenames(category);
             const fullPaths = categoryFiles.map(filename => `${categoryInfo.folder}${filename}`);
@@ -1615,9 +1638,11 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('🚀 Starting ULTRA-LIGHTNING portfolio loading with cache...');
 
         await initializeCacheSystem();
+        setLoaderProgress(10);
 
         console.log('📂 Loading categories sequentially...');
         await loadPortfolioImages();
+        setLoaderProgress(20);
         console.log('✅ Portfolio data loaded');
 
         if (cacheInitialized) {
@@ -1642,6 +1667,14 @@ document.addEventListener('DOMContentLoaded', function() {
         // Ensure reviews auto-scroll & About showcase are configured after data is ready
         setupReviewsAutoScroll();
         populateAboutShowcase();
+
+        // Small perf boost for images
+        try {
+            document.querySelectorAll('img').forEach(img => {
+                img.decoding = 'async';
+                if (!img.hasAttribute('loading')) img.loading = 'lazy';
+            });
+        } catch (_) {}
 
         // Keep counts fresh (function is defined elsewhere in this file)
         setInterval(refreshCountsAndSyncCache, 30000);
