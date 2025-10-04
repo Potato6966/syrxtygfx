@@ -594,8 +594,31 @@
                 </div>
                 
                 <div class="about-showcase">
-                    <div class="showcase-grid" id="about-showcase-grid">
-                        <!-- Thumbnail images will be dynamically loaded here -->
+                    <div class="service-cards-grid">
+                        <div class="service-card">
+                            <div class="service-icon">🖼️</div>
+                            <h4>Thumbnail Design</h4>
+                        </div>
+                        <div class="service-card">
+                            <div class="service-icon">⚙️</div>
+                            <h4>Custom Graphics</h4>
+                        </div>
+                        <div class="service-card">
+                            <div class="service-icon">⚡</div>
+                            <h4>Fast Delivery</h4>
+                        </div>
+                        <div class="service-card">
+                            <div class="service-icon">📈</div>
+                            <h4>Performance Focus</h4>
+                        </div>
+                        <div class="service-card">
+                            <div class="service-icon">🌐</div>
+                            <h4>Brand Consistency</h4>
+                        </div>
+                        <div class="service-card">
+                            <div class="service-icon">❤️</div>
+                            <h4>Client Satisfaction</h4>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -980,47 +1003,6 @@
                 }
             });
             
-            // Initialize About Me showcase instantly
-            initializeAboutShowcase();
-        }
-        
-        // Initialize About Me showcase with 6 random thumbnails - NO EMPTY FRAMES
-        function initializeAboutShowcase() {
-            const showcaseGrid = document.getElementById('about-showcase-grid');
-            if (!showcaseGrid) return;
-            
-            // Clear existing content
-            showcaseGrid.innerHTML = '';
-            
-            // Create 6 showcase items instantly
-            for (let i = 0; i < 6; i++) {
-                const showcaseItem = document.createElement('div');
-                showcaseItem.className = 'showcase-item';
-                
-                const img = document.createElement('img');
-                // Use random thumbnails from local folder
-                const randomNum = Math.floor(Math.random() * 100) + 1;
-                img.src = `Thumbnails/thumb${randomNum}.jpg`;
-                img.alt = '';
-                img.loading = 'eager'; // Load immediately
-                
-                // Hide if image fails to load - NO EMPTY FRAMES
-                img.onerror = function() {
-                    this.style.display = 'none';
-                    // Try a different random number
-                    const newRandomNum = Math.floor(Math.random() * 100) + 1;
-                    this.src = `Thumbnails/thumb${newRandomNum}.jpg`;
-                    this.style.display = 'block';
-                };
-                
-                // Show when loaded successfully
-                img.onload = function() {
-                    this.style.display = 'block';
-                };
-                
-                showcaseItem.appendChild(img);
-                showcaseGrid.appendChild(showcaseItem);
-            }
         }
         
         // Preload critical images for instant display
