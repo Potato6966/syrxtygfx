@@ -14,6 +14,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const portfolio = document.querySelector('.portfolio');
     const about = document.querySelector('.about');
     const reviewsSection = document.querySelector('.reviews-section');
+    const reviewsSlider = document.querySelector('.reviews-slider');
+    const reviewsTrack = document.querySelector('.reviews-track');
     
     let buildUpActive = true;
 
@@ -395,6 +397,33 @@ document.addEventListener('DOMContentLoaded', function() {
     const cacheManager = new ImageCacheManager();
     let cacheInitialized = false;
 
+    // Reviews auto-scroll: duplicate content and set duration based on width
+    function setupReviewsAutoScroll() {
+        if (!reviewsTrack || !reviewsSlider) return;
+        // Duplicate children once for seamless loop if not already duplicated
+        if (!reviewsTrack.dataset.duplicated) {
+            const items = Array.from(reviewsTrack.children).map(n => n.cloneNode(true));
+            items.forEach(n => reviewsTrack.appendChild(n));
+            reviewsTrack.dataset.duplicated = '1';
+        }
+
+        function applyDuration() {
+            const contentWidth = reviewsTrack.scrollWidth;
+            const speedPxPerSec = 80; // adjust for desired speed
+            const duration = Math.max(20, Math.round((contentWidth / speedPxPerSec)));
+            reviewsTrack.style.animationDuration = `${duration}s`;
+        }
+
+        applyDuration();
+        window.addEventListener('resize', () => {
+            // Recalculate after layout changes
+            reviewsTrack.style.animation = 'none';
+            void reviewsTrack.offsetWidth; // force reflow
+            reviewsTrack.style.animation = '';
+            applyDuration();
+        });
+    }
+
     async function getImagesManifest() {
         if (window.__imagesManifest !== undefined) return window.__imagesManifest;
         try {
@@ -676,6 +705,13 @@ document.addEventListener('DOMContentLoaded', function() {
             updateUI: function() {
                 this.percentage = Math.round((this.loaded / this.total) * 100);
                 this.updateLoadingTexts();
+                // Update loader overlay if present
+                try {
+                    const bar = document.getElementById('loader-bar');
+                    const pct = document.getElementById('loader-percent');
+                    if (bar) bar.style.width = `${this.percentage}%`;
+                    if (pct) pct.textContent = `${this.percentage}%`;
+                } catch (_) {}
             },
             updateLoadingTexts: function() {
                 const loadingElements = document.querySelectorAll('.count-text');
@@ -1560,35 +1596,21 @@ document.addEventListener('DOMContentLoaded', function() {
         await preloadAllPortfolioImages();
         }
         console.log('✅ All images preloaded');
+        // Hide loader overlay
+        try {
+            const loader = document.getElementById('app-loader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.style.display = 'none', 300);
+            }
+        } catch (_) {}
         
         console.log('⚡⚡⚡ ULTRA-LIGHTNING portfolio ready! All images available instantly!');
-        
 
-        async function refreshCountsAndSyncCache() {
-            try {
-                window.__imagesManifest = undefined;
-                const categories = Object.keys(portfolioCategories);
-                
-                await Promise.all(categories.map(async (category) => {
-                    const info = portfolioCategories[category];
-                    const files = await listImagesInFolder(info.folder, info.extensions);
-                    const full = files.map(f => `${info.folder}${f}`);
-                    const valid = await verifyImagesExist(full);
-                    updatePortfolioCount(category, valid.length);
-                    portfolioData[category] = portfolioData[category] || valid.map(p => ({ path: p, name: p.split('/').pop().replace(/\.(png|jpg|jpeg|gif|webp)$/i, ''), category }));
-                }));
-                
-                if (cacheInitialized) {
-                    const syncResult = await cacheManager.syncWithManifest();
-                    if (syncResult.updated) {
-                        console.log(`🔄 Auto-sync: +${syncResult.new} new, -${syncResult.removed} removed`);
-                    }
-                }
-            } catch (e) {
-                console.warn('Refresh counts failed:', e);
-            }
-        }
+        // Ensure reviews auto-scroll is configured (after DOM is painted and widths are known)
+        setupReviewsAutoScroll();
 
+        // Keep counts fresh (function is defined elsewhere in this file)
         setInterval(refreshCountsAndSyncCache, 30000);
 
         // Expose handlers for Service Worker messages to avoid full page reloads
