@@ -192,9 +192,19 @@ html {
 }
 
 .service-icon {
-    font-size: 2.5rem;
-    margin-bottom: 12px;
+    width: 48px;
+    height: 48px;
+    margin: 0 auto 12px auto;
     display: block;
+    color: #3b82f6;
+}
+
+.service-icon svg {
+    width: 100%;
+    height: 100%;
+    stroke: #3b82f6;
+    stroke-width: 2;
+    fill: none;
 }
 
 .service-card h4 {
