@@ -75,9 +75,6 @@
 /* Prevent layout shifts and glitching */
 html {
     scroll-behavior: smooth;
-    overflow-x: hidden;
-    /* Prevent scrollbar width changes from causing jumps */
-    scrollbar-gutter: stable;
     /* Prevent flickering */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -336,11 +333,7 @@ body {
     font-family: 'Inter', sans-serif;
     background: #0a0e27;
     color: #ffffff;
-    overflow-x: hidden;
     position: relative;
-    /* Prevent layout shifts and glitching */
-    scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch;
     /* Prevent content jumping */
     min-height: 100vh;
     width: 100%;
@@ -367,89 +360,11 @@ body::before {
     pointer-events: none;
 }
 
-.light-overlay {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: 
-        radial-gradient(circle at 70% 30%, rgba(59, 130, 246, 0.15) 0%, transparent 60%);
-    z-index: -1;
-    animation: simpleLight 20s ease-in-out infinite;
-    pointer-events: none;
-}
+/* Removed light overlay to prevent flickering */
 
-@keyframes simpleLight {
-    0% {
-        background: 
-            radial-gradient(circle at 70% 30%, rgba(59, 130, 246, 0.12) 0%, transparent 60%);
-    }
-    50% {
-        background: 
-            radial-gradient(circle at 70% 30%, rgba(59, 130, 246, 0.18) 0%, transparent 60%);
-    }
-    100% {
-        background: 
-            radial-gradient(circle at 70% 30%, rgba(59, 130, 246, 0.12) 0%, transparent 60%);
-    }
-}
+/* Removed mouse light to prevent flickering */
 
-.mouse-light {
-    position: fixed;
-    width: 300px;
-    height: 300px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, rgba(59, 130, 246, 0.05) 30%, transparent 70%);
-    pointer-events: none;
-    z-index: 1;
-    transition: transform 0.1s ease-out;
-    mix-blend-mode: screen;
-    /* Prevent flickering */
-    -webkit-backface-visibility: hidden;
-    backface-visibility: hidden;
-    will-change: transform;
-}
-
-.mouse-light::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(59, 130, 246, 0.2) 0%, transparent 70%);
-    transform: translate(-50%, -50%);
-    animation: pulse 2s ease-in-out infinite;
-}
-
-@keyframes pulse {
-    0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.7; }
-    50% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
-}
-
-body::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image: 
-        linear-gradient(rgba(59, 130, 246, 0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(59, 130, 246, 0.03) 1px, transparent 1px);
-    background-size: 50px 50px;
-    background-position: 0 0, 0 0;
-    z-index: 1;
-    pointer-events: none;
-}
-
-@keyframes gridMove {
-    0% { background-position: 0 0, 0 0; }
-    100% { background-position: 0 50px, 50px 0; }
-}
+/* Removed animated grid to prevent flickering */
 
 
 
@@ -665,7 +580,6 @@ body::before {
     align-items: center;
     justify-content: center;
     position: relative;
-    overflow: hidden;
     /* Ensure content is visible */
     z-index: 2;
     /* Prevent flickering */
@@ -747,7 +661,6 @@ body::before {
     background: rgba(15, 20, 41, 0.3);
     border-top: 1px solid rgba(59, 130, 246, 0.1);
     border-bottom: 1px solid rgba(59, 130, 246, 0.1);
-    overflow: hidden;
     position: relative;
     z-index: 0;
 }
@@ -780,10 +693,7 @@ body::before {
 
 .reviews-slider {
     position: relative;
-    width: 100vw;
-    overflow: hidden;
-    mask: linear-gradient(90deg, transparent 0%, white 5%, white 95%, transparent 100%);
-    -webkit-mask: linear-gradient(90deg, transparent 0%, white 5%, white 95%, transparent 100%);
+    width: 100%;
     padding: 20px 0;
 }
 
@@ -816,7 +726,6 @@ body::before {
     position: relative;
     transition: all 0.3s ease;
     cursor: pointer;
-    overflow: hidden;
     z-index: 0;
 }
 
@@ -1079,7 +988,6 @@ button:focus-visible,
     width: 100%;
     height: 200px;
     border-radius: 12px;
-    overflow: hidden;
     transition: transform 0.3s ease;
     margin-bottom: 15px;
 }
@@ -1268,7 +1176,6 @@ button:focus-visible,
 
 .gallery-item {
     position: relative;
-    overflow: hidden;
     border-radius: 15px;
     background: rgba(15, 20, 41, 0.6);
     border: 1px solid rgba(59, 130, 246, 0.15);
@@ -2197,7 +2104,6 @@ button:focus-visible,
     width: 90%;
     max-width: 600px;
     max-height: 80vh;
-    overflow: hidden;
     display: flex;
     flex-direction: column;
 }
@@ -2644,7 +2550,6 @@ button:focus-visible,
     background: rgba(255, 255, 255, 0.2);
     border-radius: 2px;
     margin: 10px auto 0;
-    overflow: hidden;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
@@ -2756,7 +2661,6 @@ button:focus-visible,
 
 .progress-bar {
     position: relative;
-    overflow: hidden;
 }
 
 .progress-bar::before {
@@ -2777,7 +2681,6 @@ button:focus-visible,
 
 /* Mobile refinements */
 @media (max-width: 768px) {
-  html, body { overflow-x: hidden; }
   .container { padding: 0 16px; }
   .navbar { padding: 10px 0; }
   .nav-container { padding: 0 16px; }
