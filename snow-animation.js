@@ -60,7 +60,7 @@
     function init() {
         resizeCanvas();
         snowflakes = [];
-        const snowflakeCount = Math.floor((canvas.width * canvas.height) / 8000);
+        const snowflakeCount = Math.floor((canvas.width * canvas.height) / 20000);
         for (let i = 0; i < snowflakeCount; i++) {
             snowflakes.push(new Snowflake());
         }
@@ -82,7 +82,7 @@
     window.addEventListener('resize', () => {
         resizeCanvas();
         // Adjust snowflake count on resize
-        const targetCount = Math.floor((canvas.width * canvas.height) / 8000);
+        const targetCount = Math.floor((canvas.width * canvas.height) / 20000);
         while (snowflakes.length < targetCount) {
             snowflakes.push(new Snowflake());
         }
