@@ -513,7 +513,7 @@ body::before {
     width: fit-content;
 }
 
-.reviews-track:hover { animation-play-state: running; }
+.reviews-track:hover { animation-play-state: paused; }
 
 @keyframes scrollReviews {
     0% {
