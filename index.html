@@ -82,7 +82,6 @@
             <div class="reviews-header">
                 <h2 class="section-title">What My Customers Say</h2>
                 <p class="section-subtitle">Content creators who trust SYRXTY for their graphics needs</p>
-                <p class="reviews-hint">Swipe on mobile to see more vouches</p>
             </div>
         </div>
         
@@ -380,8 +379,7 @@
                             <img src="" alt="Thumbnail Preview" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
                         </div>
                         <div class="portfolio-count">
-                            <div class="loading-spinner"></div>
-                            <span class="count-text">Loading...</span>
+                            <span class="count-text">59 items</span>
                         </div>
                     </div>
                     <h3>Thumbnails</h3>
@@ -395,8 +393,7 @@
                             <img src="" alt="Logo Preview" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
                         </div>
                         <div class="portfolio-count">
-                            <div class="loading-spinner"></div>
-                            <span class="count-text">Loading...</span>
+                            <span class="count-text">7 items</span>
                         </div>
                     </div>
                     <h3>Logos</h3>
@@ -410,8 +407,7 @@
                             <img src="" alt="Banner Preview" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
                         </div>
                         <div class="portfolio-count">
-                            <div class="loading-spinner"></div>
-                            <span class="count-text">Loading...</span>
+                            <span class="count-text">34 items</span>
                         </div>
                     </div>
                     <h3>Product Banners</h3>
@@ -425,8 +421,7 @@
                             <img src="" alt="Product Box Preview" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
                         </div>
                         <div class="portfolio-count">
-                            <div class="loading-spinner"></div>
-                            <span class="count-text">Loading...</span>
+                            <span class="count-text">35 items</span>
                         </div>
                     </div>
                     <h3>Product Boxes</h3>
@@ -551,7 +546,24 @@
                         <span>Order on Discord</span>
                     </a>
                     <div class="showcase-grid" id="about-showcase-grid">
-                        <!-- Filled with recent works dynamically -->
+                        <div class="showcase-item">
+                            <img src="https://images.unsplash.com/photo-1556438064-2d7646166914?w=200&h=150&fit=crop&crop=center" alt="Recent Work 1" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
+                        </div>
+                        <div class="showcase-item">
+                            <img src="https://images.unsplash.com/photo-1511512578047-dfb367046420?w=200&h=150&fit=crop&crop=center" alt="Recent Work 2" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
+                        </div>
+                        <div class="showcase-item">
+                            <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?w=200&h=150&fit=crop&crop=center" alt="Recent Work 3" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
+                        </div>
+                        <div class="showcase-item">
+                            <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=200&h=150&fit=crop&crop=center" alt="Recent Work 4" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
+                        </div>
+                        <div class="showcase-item">
+                            <img src="https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=200&h=150&fit=crop&crop=center" alt="Recent Work 5" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
+                        </div>
+                        <div class="showcase-item">
+                            <img src="https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=200&h=150&fit=crop&crop=center" alt="Recent Work 6" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
+                        </div>
                     </div>
                 </div>
             </div>
@@ -850,42 +862,157 @@
                 });
         }
         
-        // Thumbnail rotation system
-        function initializeThumbnailRotation() {
-            const thumbnailImages = [
-                'https://images.unsplash.com/photo-1556438064-2d7646166914?w=300&h=200&fit=crop&crop=center',
-                'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=300&h=200&fit=crop&crop=center',
-                'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=300&h=200&fit=crop&crop=center',
-                'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=300&h=200&fit=crop&crop=center',
-                'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=300&h=200&fit=crop&crop=center',
-                'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=300&h=200&fit=crop&crop=center',
-                'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=300&h=200&fit=crop&crop=center',
-                'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=300&h=200&fit=crop&crop=center'
-            ];
+        // Asset caching system
+        class AssetCache {
+            constructor() {
+                this.cacheKey = 'syrxty_assets_cache';
+                this.assets = {
+                    thumbnails: [
+                        'https://images.unsplash.com/photo-1556438064-2d7646166914?w=300&h=200&fit=crop&crop=center',
+                        'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=300&h=200&fit=crop&crop=center',
+                        'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=300&h=200&fit=crop&crop=center',
+                        'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=300&h=200&fit=crop&crop=center',
+                        'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=300&h=200&fit=crop&crop=center',
+                        'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=300&h=200&fit=crop&crop=center'
+                    ],
+                    logos: [
+                        'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=300&h=200&fit=crop&crop=center',
+                        'https://images.unsplash.com/photo-1558655146-9f40138edfeb?w=300&h=200&fit=crop&crop=center',
+                        'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=300&h=200&fit=crop&crop=center'
+                    ],
+                    banners: [
+                        'https://images.unsplash.com/photo-1551650975-87deedd944c3?w=300&h=200&fit=crop&crop=center',
+                        'https://images.unsplash.com/photo-1551650975-87deedd944c3?w=300&h=200&fit=crop&crop=center',
+                        'https://images.unsplash.com/photo-1551650975-87deedd944c3?w=300&h=200&fit=crop&crop=center'
+                    ],
+                    boxes: [
+                        'https://images.unsplash.com/photo-1551650975-87deedd944c3?w=300&h=200&fit=crop&crop=center',
+                        'https://images.unsplash.com/photo-1551650975-87deedd944c3?w=300&h=200&fit=crop&crop=center',
+                        'https://images.unsplash.com/photo-1551650975-87deedd944c3?w=300&h=200&fit=crop&crop=center'
+                    ]
+                };
+            }
+
+            async checkCache() {
+                const cached = localStorage.getItem(this.cacheKey);
+                if (cached) {
+                    const cacheData = JSON.parse(cached);
+                    const now = Date.now();
+                    // Cache valid for 7 days
+                    if (now - cacheData.timestamp < 7 * 24 * 60 * 60 * 1000) {
+                        return cacheData.assets;
+                    }
+                }
+                return null;
+            }
+
+            async saveCache(assets) {
+                const cacheData = {
+                    assets: assets,
+                    timestamp: Date.now()
+                };
+                localStorage.setItem(this.cacheKey, JSON.stringify(cacheData));
+            }
+
+            async downloadAssets() {
+                const loader = document.getElementById('app-loader');
+                const progressBar = document.getElementById('loader-bar');
+                const progressPercent = document.getElementById('loader-percent');
+                
+                if (loader) {
+                    loader.style.display = 'flex';
+                }
+
+                const allAssets = Object.values(this.assets).flat();
+                let downloaded = 0;
+                const total = allAssets.length;
+
+                const downloadPromises = allAssets.map(async (url) => {
+                    try {
+                        const response = await fetch(url);
+                        const blob = await response.blob();
+                        const objectUrl = URL.createObjectURL(blob);
+                        downloaded++;
+                        
+                        const progress = (downloaded / total) * 100;
+                        if (progressBar) progressBar.style.width = progress + '%';
+                        if (progressPercent) progressPercent.textContent = Math.round(progress) + '%';
+                        
+                        return { url, objectUrl };
+                    } catch (error) {
+                        console.error('Failed to download asset:', url, error);
+                        downloaded++;
+                        return { url, objectUrl: url }; // Fallback to original URL
+                    }
+                });
+
+                const results = await Promise.all(downloadPromises);
+                const assetMap = {};
+                results.forEach(({ url, objectUrl }) => {
+                    assetMap[url] = objectUrl;
+                });
+
+                await this.saveCache(assetMap);
+                
+                if (loader) {
+                    setTimeout(() => {
+                        loader.style.display = 'none';
+                    }, 500);
+                }
+
+                return assetMap;
+            }
+
+            async getAssets() {
+                let cachedAssets = await this.checkCache();
+                if (!cachedAssets) {
+                    cachedAssets = await this.downloadAssets();
+                } else {
+                    // Hide loader if assets are cached
+                    const loader = document.getElementById('app-loader');
+                    if (loader) {
+                        loader.style.display = 'none';
+                    }
+                }
+                return cachedAssets;
+            }
+        }
+
+        // Initialize asset cache and thumbnail rotation
+        async function initializeAssetSystem() {
+            const assetCache = new AssetCache();
+            const cachedAssets = await assetCache.getAssets();
             
+            // Initialize thumbnail rotation with cached assets
             const previews = ['thumbnail-preview-1', 'thumbnail-preview-2', 'thumbnail-preview-3', 'thumbnail-preview-4'];
+            const categories = ['thumbnails', 'logos', 'banners', 'boxes'];
             
             previews.forEach((previewId, index) => {
                 const preview = document.getElementById(previewId);
                 if (preview) {
                     const img = preview.querySelector('img');
                     if (img) {
-                        // Set initial random image
-                        const randomIndex = Math.floor(Math.random() * thumbnailImages.length);
-                        img.src = thumbnailImages[randomIndex];
-                        
-                        // Rotate every 3 seconds
-                        setInterval(() => {
-                            const currentIndex = thumbnailImages.indexOf(img.src);
-                            const nextIndex = (currentIndex + 1) % thumbnailImages.length;
-                            img.src = thumbnailImages[nextIndex];
-                        }, 3000);
+                        const categoryAssets = assetCache.assets[categories[index]];
+                        if (categoryAssets && categoryAssets.length > 0) {
+                            // Set initial random image from cached assets
+                            const randomIndex = Math.floor(Math.random() * categoryAssets.length);
+                            const assetUrl = categoryAssets[randomIndex];
+                            img.src = cachedAssets[assetUrl] || assetUrl;
+                            
+                            // Rotate every 3 seconds
+                            setInterval(() => {
+                                const currentIndex = categoryAssets.indexOf(assetUrl);
+                                const nextIndex = (currentIndex + 1) % categoryAssets.length;
+                                const nextAssetUrl = categoryAssets[nextIndex];
+                                img.src = cachedAssets[nextAssetUrl] || nextAssetUrl;
+                            }, 3000);
+                        }
                     }
                 }
             });
         }
         
-        document.addEventListener('DOMContentLoaded', initializeThumbnailRotation);
+        document.addEventListener('DOMContentLoaded', initializeAssetSystem);
         
         const style = document.createElement('style');
         style.textContent = `
@@ -902,6 +1029,23 @@
                 transition: transform 0.3s ease;
             }
             .portfolio-thumbnail:hover {
+                transform: scale(1.05);
+            }
+            .showcase-grid {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                grid-template-rows: repeat(3, 1fr);
+                gap: 10px;
+                margin-top: 20px;
+            }
+            .showcase-item {
+                width: 100%;
+                height: 100px;
+                border-radius: 8px;
+                overflow: hidden;
+                transition: transform 0.3s ease;
+            }
+            .showcase-item:hover {
                 transform: scale(1.05);
             }
         `;
