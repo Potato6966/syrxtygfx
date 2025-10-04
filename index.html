@@ -1176,12 +1176,16 @@
         document.addEventListener('DOMContentLoaded', function() {
             const splashScreen = document.getElementById('splash-screen');
             
+            // Prevent page glitching by stabilizing layout
+            document.body.style.overflow = 'hidden';
+            
             // Hide splash screen when clicked
             splashScreen.addEventListener('click', function() {
                 splashScreen.classList.add('fade-out');
                 
-                // Remove splash screen from DOM after animation
+                // Restore scrolling and remove splash screen
                 setTimeout(() => {
+                    document.body.style.overflow = '';
                     splashScreen.style.display = 'none';
                 }, 1000);
             });
@@ -1191,10 +1195,23 @@
                 if (!splashScreen.classList.contains('fade-out')) {
                     splashScreen.classList.add('fade-out');
                     setTimeout(() => {
+                        document.body.style.overflow = '';
                         splashScreen.style.display = 'none';
                     }, 1000);
                 }
             }, 5000);
+            
+            // Prevent layout shifts during animations
+            const style = document.createElement('style');
+            style.textContent = `
+                * {
+                    -webkit-backface-visibility: hidden;
+                    backface-visibility: hidden;
+                    -webkit-perspective: 1000;
+                    perspective: 1000;
+                }
+            `;
+            document.head.appendChild(style);
         });
     </script>
 </body>
