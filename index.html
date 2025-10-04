@@ -20,6 +20,21 @@
     <link rel="dns-prefetch" href="//unpkg.com">
 </head>
 <body>
+    <!-- Splash Screen -->
+    <div id="splash-screen" class="splash-screen">
+        <div class="splash-content">
+            <div class="splash-logo">
+                <img src="SYRXTY_pfp/IMG_5510.png" alt="SYRXTY" class="splash-pfp">
+                <h1 class="splash-title">SYRXTY</h1>
+                <p class="splash-subtitle">Fortnite Graphics Designer</p>
+            </div>
+            <div class="splash-click-hint">
+                <p>Click anywhere to continue</p>
+                <div class="splash-arrow">↓</div>
+            </div>
+        </div>
+    </div>
+
     <canvas id="snow-canvas" class="snow-canvas"></canvas>
     <div class="light-overlay"></div>
     <div class="mouse-light" id="mouseLight"></div>
@@ -1174,6 +1189,31 @@
             }
         `;
         document.head.appendChild(style);
+
+        // Splash Screen Functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const splashScreen = document.getElementById('splash-screen');
+            
+            // Hide splash screen when clicked
+            splashScreen.addEventListener('click', function() {
+                splashScreen.classList.add('fade-out');
+                
+                // Remove splash screen from DOM after animation
+                setTimeout(() => {
+                    splashScreen.style.display = 'none';
+                }, 1000);
+            });
+            
+            // Auto-hide splash screen after 5 seconds if not clicked
+            setTimeout(() => {
+                if (!splashScreen.classList.contains('fade-out')) {
+                    splashScreen.classList.add('fade-out');
+                    setTimeout(() => {
+                        splashScreen.style.display = 'none';
+                    }, 1000);
+                }
+            }, 5000);
+        });
     </script>
 </body>
 </html>
