@@ -236,7 +236,7 @@
                         </div>
                     </div>
 
-
+                    <!-- Duplicate reviews for seamless animation -->
                     <div class="review-card">
                         <div class="review-avatar">
                             <div class="avatar-circle">2</div>
@@ -319,14 +319,14 @@
 
                     <div class="review-card">
                         <div class="review-avatar">
-                            <div class="avatar-circle">C</div>
+                            <div class="avatar-circle">Z</div>
                         </div>
                         <div class="review-content">
                             <div class="review-author">
-                                <h4>ContentKing99</h4>
-                                <span class="review-time">3 days ago</span>
+                                <h4>Zenn</h4>
+                                <span class="review-time">Recent</span>
                             </div>
-                            <p class="review-text">The logo design was perfect! Clean, professional, and exactly what my brand needed. SYRXTY has a real talent for understanding what works in the gaming space.</p>
+                            <p class="review-text">+rep @SyrxtyGFX | #1 GFX ON BIO! 🥔 quality was 10/10 def buyin again, amazin banners</p>
                             <div class="review-stars">
                                 <i data-lucide="star" class="star filled"></i>
                                 <i data-lucide="star" class="star filled"></i>
@@ -336,6 +336,67 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="review-card">
+                        <div class="review-avatar">
+                            <div class="avatar-circle">2</div>
+                        </div>
+                        <div class="review-content">
+                            <div class="review-author">
+                                <h4>200IQ</h4>
+                                <span class="review-time">Recent</span>
+                            </div>
+                            <p class="review-text">+rep @SyrxtyGFX | #1 GFX ON BIO! 🥔 W desings 100% worth it</p>
+                            <div class="review-stars">
+                                <i data-lucide="star" class="star filled"></i>
+                                <i data-lucide="star" class="star filled"></i>
+                                <i data-lucide="star" class="star filled"></i>
+                                <i data-lucide="star" class="star filled"></i>
+                                <i data-lucide="star" class="star filled"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="review-card">
+                        <div class="review-avatar">
+                            <div class="avatar-circle">T</div>
+                        </div>
+                        <div class="review-content">
+                            <div class="review-author">
+                                <h4>Anonymous</h4>
+                                <span class="review-time">Recent</span>
+                            </div>
+                            <p class="review-text">+rep @SyrxtyGFX | #1 GFX ON BIO! 🥔 best gfx on market highly reccomend</p>
+                            <div class="review-stars">
+                                <i data-lucide="star" class="star filled"></i>
+                                <i data-lucide="star" class="star filled"></i>
+                                <i data-lucide="star" class="star filled"></i>
+                                <i data-lucide="star" class="star filled"></i>
+                                <i data-lucide="star" class="star filled"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="review-card">
+                        <div class="review-avatar">
+                            <div class="avatar-circle">Y</div>
+                        </div>
+                        <div class="review-content">
+                            <div class="review-author">
+                                <h4>YURI</h4>
+                                <span class="review-time">22.08.2025</span>
+                            </div>
+                            <p class="review-text">+rep @SyrxtyGFX | #1 GFX ON BIO! 🥔 still going still not banned still ud</p>
+                            <div class="review-stars">
+                                <i data-lucide="star" class="star filled"></i>
+                                <i data-lucide="star" class="star filled"></i>
+                                <i data-lucide="star" class="star filled"></i>
+                                <i data-lucide="star" class="star filled"></i>
+                                <i data-lucide="star" class="star filled"></i>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
     </section>
@@ -778,11 +839,15 @@
             }
         })();
 
-        // Reviews slider - let CSS animation handle it naturally
+        // Reviews slider - ensure animation works properly
         (function reviewsSliderSetup(){
             const track = document.querySelector('.reviews-track');
             const slider = document.querySelector('.reviews-slider');
             if (!track || !slider) return;
+            
+            // Ensure animation is running
+            track.style.animation = 'scrollReviews 30s linear infinite';
+            track.style.animationPlayState = 'running';
             
             // Pause animation on hover for better UX
             slider.addEventListener('mouseenter', () => {
@@ -792,6 +857,13 @@
             slider.addEventListener('mouseleave', () => {
                 track.style.animationPlayState = 'running';
             });
+            
+            // Force animation restart if needed
+            setTimeout(() => {
+                track.style.animation = 'none';
+                track.offsetHeight; // Trigger reflow
+                track.style.animation = 'scrollReviews 30s linear infinite';
+            }, 100);
         })();
         
         if ('serviceWorker' in navigator) {
