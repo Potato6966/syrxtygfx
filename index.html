@@ -370,17 +370,14 @@
                     <a href="https://tiktok.com/@syrxty" target="_blank" class="social-inline-btn" title="TikTok">
                         <i data-lucide="video"></i>
                     </a>
-                    <a href="https://discord.gg/tcnhqygZN4" target="_blank" class="social-inline-btn" title="Discord">
-                        <i data-lucide="message-circle"></i>
-                    </a>
                 </div>
             </div>
             
             <div class="portfolio-grid">
                 <div class="portfolio-card" data-category="thumbnails">
                     <div class="portfolio-preview">
-                        <div class="portfolio-icon">
-                            <i data-lucide="image"></i>
+                        <div class="portfolio-thumbnail" id="thumbnail-preview-1">
+                            <img src="" alt="Thumbnail Preview" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
                         </div>
                         <div class="portfolio-count">
                             <div class="loading-spinner"></div>
@@ -394,8 +391,8 @@
                 
                 <div class="portfolio-card" data-category="logos">
                     <div class="portfolio-preview">
-                        <div class="portfolio-icon">
-                            <i data-lucide="layers"></i>
+                        <div class="portfolio-thumbnail" id="thumbnail-preview-2">
+                            <img src="" alt="Logo Preview" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
                         </div>
                         <div class="portfolio-count">
                             <div class="loading-spinner"></div>
@@ -409,8 +406,8 @@
                 
                 <div class="portfolio-card" data-category="product-banners">
                     <div class="portfolio-preview">
-                        <div class="portfolio-icon">
-                            <i data-lucide="layout"></i>
+                        <div class="portfolio-thumbnail" id="thumbnail-preview-3">
+                            <img src="" alt="Banner Preview" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
                         </div>
                         <div class="portfolio-count">
                             <div class="loading-spinner"></div>
@@ -424,8 +421,8 @@
                 
                 <div class="portfolio-card" data-category="product-boxes">
                     <div class="portfolio-preview">
-                        <div class="portfolio-icon">
-                            <i data-lucide="package"></i>
+                        <div class="portfolio-thumbnail" id="thumbnail-preview-4">
+                            <img src="" alt="Product Box Preview" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
                         </div>
                         <div class="portfolio-count">
                             <div class="loading-spinner"></div>
@@ -553,43 +550,8 @@
                         <i data-lucide="message-circle"></i>
                         <span>Order on Discord</span>
                     </a>
-                    <div class="showcase-grid">
-                        <div class="showcase-item">
-                            <div class="showcase-placeholder">
-                                <i data-lucide="image"></i>
-                                <span>Thumbnail Design</span>
-                            </div>
-                        </div>
-                        <div class="showcase-item">
-                            <div class="showcase-placeholder">
-                                <i data-lucide="settings"></i>
-                                <span>Custom Graphics</span>
-                            </div>
-                        </div>
-                        <div class="showcase-item">
-                            <div class="showcase-placeholder">
-                                <i data-lucide="zap"></i>
-                                <span>Fast Delivery</span>
-                            </div>
-                        </div>
-                        <div class="showcase-item">
-                            <div class="showcase-placeholder">
-                                <i data-lucide="trending-up"></i>
-                                <span>Performance Focus</span>
-                            </div>
-                        </div>
-                        <div class="showcase-item">
-                            <div class="showcase-placeholder">
-                                <i data-lucide="palette"></i>
-                                <span>Brand Consistency</span>
-                            </div>
-                        </div>
-                        <div class="showcase-item">
-                            <div class="showcase-placeholder">
-                                <i data-lucide="heart"></i>
-                                <span>Client Satisfaction</span>
-                            </div>
-                        </div>
+                    <div class="showcase-grid" id="about-showcase-grid">
+                        <!-- Filled with recent works dynamically -->
                     </div>
                 </div>
             </div>
@@ -888,11 +850,59 @@
                 });
         }
         
+        // Thumbnail rotation system
+        function initializeThumbnailRotation() {
+            const thumbnailImages = [
+                'https://images.unsplash.com/photo-1556438064-2d7646166914?w=300&h=200&fit=crop&crop=center',
+                'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=300&h=200&fit=crop&crop=center',
+                'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=300&h=200&fit=crop&crop=center',
+                'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=300&h=200&fit=crop&crop=center',
+                'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=300&h=200&fit=crop&crop=center',
+                'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=300&h=200&fit=crop&crop=center',
+                'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=300&h=200&fit=crop&crop=center',
+                'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=300&h=200&fit=crop&crop=center'
+            ];
+            
+            const previews = ['thumbnail-preview-1', 'thumbnail-preview-2', 'thumbnail-preview-3', 'thumbnail-preview-4'];
+            
+            previews.forEach((previewId, index) => {
+                const preview = document.getElementById(previewId);
+                if (preview) {
+                    const img = preview.querySelector('img');
+                    if (img) {
+                        // Set initial random image
+                        const randomIndex = Math.floor(Math.random() * thumbnailImages.length);
+                        img.src = thumbnailImages[randomIndex];
+                        
+                        // Rotate every 3 seconds
+                        setInterval(() => {
+                            const currentIndex = thumbnailImages.indexOf(img.src);
+                            const nextIndex = (currentIndex + 1) % thumbnailImages.length;
+                            img.src = thumbnailImages[nextIndex];
+                        }, 3000);
+                    }
+                }
+            });
+        }
+        
+        document.addEventListener('DOMContentLoaded', initializeThumbnailRotation);
+        
         const style = document.createElement('style');
         style.textContent = `
             @keyframes spin {
                 0% { transform: rotate(0deg); }
                 100% { transform: rotate(360deg); }
+            }
+            .portfolio-thumbnail {
+                width: 100%;
+                height: 120px;
+                border-radius: 8px;
+                overflow: hidden;
+                margin-bottom: 10px;
+                transition: transform 0.3s ease;
+            }
+            .portfolio-thumbnail:hover {
+                transform: scale(1.05);
             }
         `;
         document.head.appendChild(style);
