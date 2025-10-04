@@ -24,6 +24,11 @@ html {
     backface-visibility: hidden;
     -webkit-perspective: 1000px;
     perspective: 1000px;
+    /* Ensure content is visible */
+    position: relative;
+    z-index: 2;
+    opacity: 1;
+    visibility: visible;
 }
 
 /* Splash Screen */
@@ -285,17 +290,11 @@ body::after {
     left: 0;
     width: 100%;
     height: 100%;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    filter: blur(12px) brightness(0.3) contrast(1.2);
+    background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #2d1b69 100%);
     z-index: -3;
-    transition: opacity 0.5s ease, filter 0.3s ease;
-    will-change: background-image, opacity;
-    
-
-    background-image: none;
-    background-color: rgba(10, 14, 39, 0.8);
+    /* Prevent flickering */
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
 }
 
 body::before {
@@ -374,13 +373,17 @@ body::before {
     width: 100%;
     height: 100%;
     background-image: 
-        linear-gradient(rgba(59, 130, 246, 0.08) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(59, 130, 246, 0.08) 1px, transparent 1px);
+        linear-gradient(rgba(59, 130, 246, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(59, 130, 246, 0.05) 1px, transparent 1px);
     background-size: 50px 50px;
     background-position: 0 0, 0 0;
     z-index: 1;
     animation: gridMove 60s linear infinite;
     pointer-events: none;
+    /* Prevent flickering */
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    will-change: background-position;
 }
 
 @keyframes gridMove {
@@ -408,6 +411,12 @@ body::before {
     transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     border-radius: 0 0 20px 20px;
     box-shadow: 0 4px 20px rgba(59, 130, 246, 0.1);
+    /* Ensure navbar is visible */
+    opacity: 1;
+    visibility: visible;
+    /* Prevent flickering */
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
 }
 
  
@@ -597,6 +606,11 @@ body::before {
     justify-content: center;
     position: relative;
     overflow: hidden;
+    /* Ensure content is visible */
+    z-index: 2;
+    /* Prevent flickering */
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
 }
 
 .hero-bg {
@@ -615,8 +629,13 @@ body::before {
 
 .hero-content {
     text-align: center;
-    z-index: 2;
+    z-index: 3;
     transition: all 1.2s cubic-bezier(0.23, 1, 0.32, 1);
+    /* Ensure content is visible */
+    position: relative;
+    /* Prevent flickering */
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
 }
 
 
@@ -941,6 +960,12 @@ button:focus-visible,
 .portfolio {
     padding: 120px 0 80px 0;
     transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    /* Ensure content is visible */
+    position: relative;
+    z-index: 2;
+    /* Prevent flickering */
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
 }
 
 /* Re-light Portfolio heading and description */
@@ -1436,6 +1461,12 @@ button:focus-visible,
 .about {
     padding: 120px 0 80px 0;
     transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    /* Ensure content is visible */
+    position: relative;
+    z-index: 2;
+    /* Prevent flickering */
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
 }
 
 .about-content {
