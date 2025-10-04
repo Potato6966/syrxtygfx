@@ -414,7 +414,7 @@
                 <div class="portfolio-card" data-category="thumbnails">
                     <div class="portfolio-preview">
                         <div class="portfolio-thumbnail" id="thumbnail-preview-1">
-                            <img src="" alt="">
+                            <img src="Thumbnails/thumb1.jpg" alt="Thumbnail Preview" onerror="this.style.display='none'">
                         </div>
                     </div>
                     <div class="portfolio-count">
@@ -428,7 +428,7 @@
                 <div class="portfolio-card" data-category="logos">
                     <div class="portfolio-preview">
                         <div class="portfolio-thumbnail" id="thumbnail-preview-2">
-                            <img src="" alt="">
+                            <img src="Thumbnails/logo1.jpg" alt="Logo Preview" onerror="this.style.display='none'">
                         </div>
                     </div>
                     <div class="portfolio-count">
@@ -442,7 +442,7 @@
                 <div class="portfolio-card" data-category="product-banners">
                     <div class="portfolio-preview">
                         <div class="portfolio-thumbnail" id="thumbnail-preview-3">
-                            <img src="" alt="">
+                            <img src="Thumbnails/banner1.jpg" alt="Banner Preview" onerror="this.style.display='none'">
                         </div>
                     </div>
                     <div class="portfolio-count">
@@ -456,7 +456,7 @@
                 <div class="portfolio-card" data-category="product-boxes">
                     <div class="portfolio-preview">
                         <div class="portfolio-thumbnail" id="thumbnail-preview-4">
-                            <img src="" alt="">
+                            <img src="Thumbnails/box1.jpg" alt="Product Box Preview" onerror="this.style.display='none'">
                         </div>
                     </div>
                     <div class="portfolio-count">
@@ -921,7 +921,7 @@
             }
         }
 
-        // Initialize instant image loading
+        // Initialize instant image loading - NO EMPTY FRAMES
         function initializeAssetSystem() {
             const imageLoader = new LocalImageLoader();
             
@@ -935,12 +935,31 @@
                     const img = preview.querySelector('img');
                     if (img) {
                         // Set initial random image instantly
-                        img.src = imageLoader.getRandomImage(categories[index]);
+                        const initialSrc = imageLoader.getRandomImage(categories[index]);
+                        img.src = initialSrc;
                         img.alt = '';
+                        
+                        // Hide image if it fails to load
+                        img.onerror = function() {
+                            this.style.display = 'none';
+                            // Try a different image
+                            setTimeout(() => {
+                                this.src = imageLoader.getRandomImage(categories[index]);
+                                this.style.display = 'block';
+                            }, 100);
+                        };
+                        
+                        // Show image when it loads successfully
+                        img.onload = function() {
+                            this.style.display = 'block';
+                        };
                         
                         // Rotate every 3 seconds
                         setInterval(() => {
-                            img.src = imageLoader.getRandomImage(categories[index]);
+                            const newSrc = imageLoader.getRandomImage(categories[index]);
+                            if (newSrc !== img.src) {
+                                img.src = newSrc;
+                            }
                         }, 3000);
                     }
                 }
@@ -950,7 +969,7 @@
             initializeAboutShowcase();
         }
         
-        // Initialize About Me showcase with 6 random thumbnails - INSTANT LOAD
+        // Initialize About Me showcase with 6 random thumbnails - NO EMPTY FRAMES
         function initializeAboutShowcase() {
             const showcaseGrid = document.getElementById('about-showcase-grid');
             if (!showcaseGrid) return;
@@ -967,13 +986,21 @@
                 // Use random thumbnails from local folder
                 const randomNum = Math.floor(Math.random() * 100) + 1;
                 img.src = `Thumbnails/thumb${randomNum}.jpg`;
-                img.alt = `Recent Work ${i + 1}`;
+                img.alt = '';
                 img.loading = 'eager'; // Load immediately
                 
-                // Simple error handling - try different random number
+                // Hide if image fails to load - NO EMPTY FRAMES
                 img.onerror = function() {
+                    this.style.display = 'none';
+                    // Try a different random number
                     const newRandomNum = Math.floor(Math.random() * 100) + 1;
                     this.src = `Thumbnails/thumb${newRandomNum}.jpg`;
+                    this.style.display = 'block';
+                };
+                
+                // Show when loaded successfully
+                img.onload = function() {
+                    this.style.display = 'block';
                 };
                 
                 showcaseItem.appendChild(img);
@@ -1001,7 +1028,7 @@
         
         const style = document.createElement('style');
         style.textContent = `
-            /* INSTANT IMAGE LOADING */
+            /* INSTANT IMAGE LOADING - NO EMPTY FRAMES */
             .portfolio-thumbnail img,
             .showcase-item img {
                 width: 100%;
@@ -1012,9 +1039,20 @@
                 opacity: 1;
             }
             
+            /* Hide broken images and empty frames completely */
             .portfolio-thumbnail img[src=""],
-            .showcase-item img[src=""] {
-                opacity: 0;
+            .showcase-item img[src=""],
+            .portfolio-thumbnail img:not([src]),
+            .showcase-item img:not([src]) {
+                display: none !important;
+            }
+            
+            /* Hide broken image icons */
+            .portfolio-thumbnail img[alt*="broken"],
+            .portfolio-thumbnail img[alt*="error"],
+            .showcase-item img[alt*="broken"],
+            .showcase-item img[alt*="error"] {
+                display: none !important;
             }
             
             /* Force immediate loading */
@@ -1024,11 +1062,19 @@
                 image-rendering: -webkit-optimize-contrast;
             }
             
-            /* Prevent layout shift */
+            /* Prevent layout shift and hide empty frames */
             .portfolio-thumbnail,
             .showcase-item {
                 position: relative;
                 overflow: hidden;
+                background: linear-gradient(135deg, #1e293b, #334155);
+                border-radius: 12px;
+            }
+            
+            /* Hide empty containers when no image is loaded */
+            .portfolio-thumbnail:not(:has(img:not([style*="display: none"]))),
+            .showcase-item:not(:has(img:not([style*="display: none"]))) {
+                display: none;
             }
             
             /* Loading state */
